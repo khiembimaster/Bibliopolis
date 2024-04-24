@@ -14,16 +14,19 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  username      String?         @unique
-  email         String?         @unique
+  username      String?   @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
-  Session       Session[]
-  Account       Account?
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
+  role          Role      @default(USER)
+  orders        Order[]
+  cart          Cart?
+  reviews       Review[]
+
+  Session Session[]
+  Account Account?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,17 +76,108 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Optional for WebAuthn support
-model Authenticator {
-  id                   String  @id @default(cuid())
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
+model Book {
+  id                Int             @id @default(autoincrement())
+  title             String
+  author            String
+  isbn              String
+  genres            Genre[]
+  price             Decimal
+  publication_year  DateTime
+  description       String          @db.Text
+  cover_image       String
+  publisher         String
+  stock_quantity    Int
+  rating            Decimal
+  reviews           Review[]
+  orders            BooksToOrders[]
+  carts             BooksToCarts[]
+  PromotionsOnBooks Promotion[]
+}
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Genre {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String @db.Text
+  books       Book[]
+}
+
+model Order {
+  id               String          @id @default(cuid())
+  user             User            @relation(fields: [userId], references: [id])
+  userId           String
+  order_date       DateTime
+  books            BooksToOrders[]
+  total_price      Decimal
+  shipping_address String
+  billing_address  String
+  status           OrderStatus     @default(UNPAID)
+}
+
+model Cart {
+  id          Int            @id @default(autoincrement())
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String         @unique
+  books       BooksToCarts[]
+  total_price Decimal
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  rating      Int      @default(5)
+  content     String   @db.MediumText
+  date_posted DateTime
+}
+
+model Promotion {
+  id               Int      @id @default(autoincrement())
+  description      String
+  discount_rate    Int
+  start_date       DateTime
+  end_date         DateTime
+  applicable_books Book[]
+}
+
+model BooksToOrders {
+  book     Book   @relation(fields: [bookId], references: [id])
+  bookId   Int
+  order    Order  @relation(fields: [orderId], references: [id])
+  orderId  String
+  quantity Int
+
+  @@id([bookId, orderId])
+}
+
+model BooksToCarts {
+  book     Book @relation(fields: [bookId], references: [id])
+  bookId   Int
+  cart     Cart @relation(fields: [cartId], references: [id])
+  cartId   Int
+  quantity Int
+
+  @@id([bookId, cartId])
+}
+
+enum Role {
+  USER
+  ADMIN
+  WAREHOUSE_STAFF
+  SALE
+}
+
+enum OrderStatus {
+  UNPAID
+  READY_TO_SHIP
+  PROCESSED
+  RETRY_SHIP
+  SHIPPED
+  TO_CONFIRM_RECEIVE
+  COMPLETED
+  TO_RETURN
+  IN_CANCEL
+  CANCELLED
 }
