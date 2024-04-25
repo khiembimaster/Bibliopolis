@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import prisma from '@/client';
+import { Button } from '@/components/ui/button';
 import { Role } from '@prisma/client';
 import React from 'react'
 
@@ -10,7 +11,7 @@ const OrderManagement = async () => {
     
     return <p>You are a warehouse-staff, welcome!</p>;
   }
-  return <p>You are not authorized to view this page!</p>;
+  return <Button>You are not authorized to view this page!</Button>;
 }
 
 export default OrderManagement
