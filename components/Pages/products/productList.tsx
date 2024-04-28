@@ -1,32 +1,79 @@
-import React from 'react';
-import Image from 'next/image'; // Import Image component from next/image
-import Link from 'next/link'; 
+'use client'
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { GetAllBook } from '@/app/action';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { Button } from '@/components/ui/button';
+import { Book } from './Book';
+
 
 export default function ProductList() {
-  const products = [
-    { id: 1, name: 'Product 1', price: 10, imageUrl: '/image/image1.jpg' },
-    { id: 2, name: 'Product 2', price: 20, imageUrl: '/image/image2.jpg' },
-    { id: 3, name: 'Product 3', price: 30, imageUrl: '/image/image3.jpg' },
-    { id: 1, name: 'Product 1', price: 10, imageUrl: '/image/image1.jpg' },
-    { id: 2, name: 'Product 2', price: 20, imageUrl: '/image/image2.jpg' },
-    { id: 3, name: 'Product 3', price: 30, imageUrl: '/image/image3.jpg' },
-    { id: 1, name: 'Product 1', price: 10, imageUrl: '/image/image1.jpg' },
-    { id: 2, name: 'Product 2', price: 20, imageUrl: '/image/image2.jpg' },
-    { id: 3, name: 'Product 3', price: 30, imageUrl: '/image/image3.jpg' },
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [books, setBooks] = useState<Book[]>([]); // Provide the correct type for the initial state
+  const [totalPage, setTotalPage] = useState(0);
+
+  const fetchBooks = async (page: number) => {
+    console.log("Fetching books for page:", page);
+    const { books: fetchedBooks, totalPage: fetchedTotalPage } = await GetAllBook(page, 10);
+    setBooks(fetchedBooks);
+    setTotalPage(fetchedTotalPage);
+  };
+  
+  useEffect(() => {
+    fetchBooks(currentPage);
+  }, [currentPage]);
+
+  const handlePaginationPrevious = () => {
+    console.log("Previous button clicked");
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+  
+  const handlePaginationNext = () => {
+    console.log("Next button clicked");
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
   return (
     <div className='grid grid-cols-4 gap-5 mt-10'>
-      {products.map(product => (
+      {books.map(product => (
         <div key={product.id} className="border rounded p-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
           <Link href={`/products/${product.id}`}>
             <div>
-              <Image src={product.imageUrl} alt={product.name} width={300} height={200} className="w-full h-48 object-cover mb-4" />
-              <h2 className="text-lg font-semibold">{product.name}</h2>
-              <p className="text-gray-600">${product.price}</p>
+              <Image src={product.cover_image} alt={product.title} width={300} height={200} className="w-full h-48 object-cover mb-4" />
+              <h2 className="text-lg font-semibold">{product.title}</h2>
+              <p className="text-gray-600">${product.price.toString()}</p>
             </div>
           </Link>
         </div>
       ))}
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+          <Button onClick={handlePaginationPrevious}>
+  <PaginationPrevious />
+</Button>
+          </PaginationItem>
+          {[...Array(totalPage)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink>{index + 1}</PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+          <Button onClick={handlePaginationNext}>
+  <PaginationNext />
+</Button>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }
