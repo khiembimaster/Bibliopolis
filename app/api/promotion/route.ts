@@ -3,22 +3,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const { title, author, isbn, price, publication_year, description, cover_image, publisher, stock_quantity, rating } = body;
+  const { description, discount_rate, start_date, end_date } = body;
   console.log(req.json);
 
-  const result = await prisma.book.create({
+  const result = await prisma.promotion.create({
     data: {
-      title: title,
-      author: author, 
-      isbn: isbn,
-      publication_year: publication_year,
-      price: price,
       description: description,
-      cover_image: cover_image,
-      publisher: publisher,
-      stock_quantity: stock_quantity,
-      rating: rating
-    }
+      discount_rate: discount_rate,
+      start_date: start_date,
+      end_date: end_date
+    },
   })
   if (!result) return Response.json({
     message: 'error',
@@ -28,6 +22,6 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  const result = await prisma.book.findMany()
+  const result = await prisma.promotion.findMany()
   return Response.json({ message: 'ok', status: 200, data: result })
 }

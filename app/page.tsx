@@ -1,7 +1,10 @@
 import Image from "next/image";
+import { Fragment } from "react";
 
 export default function Home() {
   return (
-   <div>Welcome to Bibliopolis</div>
+    <Fragment>
+      
+    </Fragment>
   );
 }
