@@ -3,9 +3,15 @@
 import prisma from "../client"
 
 
+const GetAllBook = async () =>{
+    const books = await prisma.book.findMany();
+   
+    return books;
+
+}
+
 const CreateBook = async function createBook(title: string, date: Date, author: string,
     prices: number, quantity: number, publisher: string, image:string ){
-
 
     const book = await prisma.book.create({
         data: {
@@ -22,8 +28,6 @@ const CreateBook = async function createBook(title: string, date: Date, author: 
         }
     });
 
-
-
 }
 
-export {CreateBook}
+export {CreateBook,GetAllBook}
