@@ -25,6 +25,8 @@ model User {
   cart          Cart?
   reviews       Review[]
 
+  shippingInfo ShippingInfo?
+
   Session Session[]
   Account Account?
 
@@ -108,9 +110,11 @@ model Order {
   userId           String
   order_date       DateTime
   books            BooksToOrders[]
+  sub_total        Decimal
+  shipping_fee     Decimal
+  tax              Decimal
   total_price      Decimal
-  shipping_address String
-  billing_address  String
+  shippingInfo     ShippingInfo?
   status           OrderStatus     @default(UNPAID)
 }
 
@@ -142,12 +146,32 @@ model Promotion {
   applicable_books Book[]
 }
 
+model ShippingInfo {
+  id             Int      @id @default(autoincrement())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique // Link to the Customer
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  state          String
+  postalCode     String
+  country        String
+  phone          String?
+  deliveryMethod String // E.g., Standard, Express
+  trackingNumber String?
+  order          Order?   @relation(fields: [orderId], references: [id])
+  orderId        String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model BooksToOrders {
-  book     Book   @relation(fields: [bookId], references: [id])
+  book     Book    @relation(fields: [bookId], references: [id])
   bookId   Int
-  order    Order  @relation(fields: [orderId], references: [id])
+  order    Order   @relation(fields: [orderId], references: [id])
   orderId  String
   quantity Int
+  total    Decimal
 
   @@id([bookId, orderId])
 }
