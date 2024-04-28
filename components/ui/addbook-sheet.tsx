@@ -1,3 +1,4 @@
+'use client'
 import { Input } from '@/components/ui/input'
 import {
     Card,
@@ -16,7 +17,8 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import {InputFile} from '@/components/ui/input-file'
+import { CreateBook } from '@/app/actions'
+import {AddBookButton} from '@/components/ui/addbook-button'
 const AddbookSheet = () => {
     return  <main>
          <Sheet>
@@ -34,49 +36,51 @@ const AddbookSheet = () => {
                         <CardContent>
                             <CardTitle>Title</CardTitle>
                             <CardDescription>
-                                <Input />
+                                <Input id='title'/>
                             </CardDescription>
                         </CardContent>
                         <CardContent>
                             <CardTitle>Author</CardTitle>
                             <CardDescription>
-                                <Input />
+                                <Input id='author' />
                             </CardDescription>
                         </CardContent>
                         <CardContent>
                             <CardTitle>Price</CardTitle>
                             <CardDescription>
-                                <Input />
+                                <Input id='price' />
                             </CardDescription>
                         </CardContent>
+                      
                         <CardContent>
+                            
                             <CardTitle>Publication-year</CardTitle>
                             <CardDescription>
-                                <Input type="date"/>
+                                <Input id='date' type="date"/>
                             </CardDescription>
                         </CardContent>
                         <CardContent>
                             <CardTitle>Stock-quantity</CardTitle>
                             <CardDescription>
-                                <Input />
+                                <Input id='quantity'/>
                             </CardDescription>
                         </CardContent>
                         <CardContent>
                             <CardTitle>Publisher</CardTitle>
                             <CardDescription>
-                                <Input />
+                                <Input id='publisher'/>
                             </CardDescription>
                         </CardContent>
                         <CardContent>
                             <CardTitle>Cover-image</CardTitle>
                             <CardDescription>
-                                <InputFile/>
+                                <input id='image' type='file'/>
                             </CardDescription>
                             
                         </CardContent>
-                        
+                     
                         <CardContent>
-                            <Button>Submit</Button>
+                          <Button onClick ={handle}>submit</Button>
                         </CardContent>
                     </Card>
                 </SheetDescription>
@@ -88,4 +92,17 @@ const AddbookSheet = () => {
    
 }
 
+const handle = () => {
+  
+       const inputTitle = document.getElementById('title') as HTMLInputElement;
+       const inputDate= document.getElementById('date') as HTMLInputElement;
+       const inputAuthor = document.getElementById('author') as HTMLInputElement;
+       const inputPrice = document.getElementById('price') as HTMLInputElement;
+       const inputQuantity = document.getElementById('quantity') as HTMLInputElement;
+       const inputPublisher = document.getElementById('publisher') as HTMLInputElement;
+       const inputImage= document.getElementById('image') as HTMLInputElement;
+
+       CreateBook(inputTitle.value,new Date(inputDate.value),inputAuthor.value,
+       Number(inputPrice.value),Number(inputQuantity.value),inputPublisher.value,inputImage.value)
+}
 export {AddbookSheet};

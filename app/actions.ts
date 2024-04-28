@@ -1,18 +1,18 @@
 
+'use server'
 import prisma from "../client"
 
 
-async function createBook(title: string, author: string, price: number, 
-    year: Date, quantity: number, publisher: string, image: string){
+const CreateBook = async function createBook(title: string, date: Date, author: string,
+    prices: number, quantity: number, publisher: string, image:string ){
 
-    let newBook = prisma.book ;
-  
+
     const book = await prisma.book.create({
         data: {
             title: title,
             author: author,
-            price: price,
-            publication_year: year,
+            price: prices,
+            publication_year: date,
             stock_quantity: quantity,
             publisher: publisher,
             cover_image: image,
@@ -25,3 +25,5 @@ async function createBook(title: string, author: string, price: number,
 
 
 }
+
+export {CreateBook}
