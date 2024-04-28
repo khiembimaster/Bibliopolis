@@ -3,6 +3,8 @@ import { Quicksand } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { Toast } from "@radix-ui/react-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = Quicksand({
   subsets: ["latin"],
@@ -24,11 +26,12 @@ export default function RootLayout({
       <body className={fontSans.className}>
         <div className={'min-h-screen flex flex-col justify-between'}>
           <Header />
-          <main>
+          <main className="mt-24">
             {children}
           </main>
           <Footer />
         </div>
+        <Toaster/>
       </body>
     </html>
   );
