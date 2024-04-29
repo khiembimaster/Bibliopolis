@@ -1,22 +1,23 @@
+import Link from 'next/link'
 import React, { ReactNode } from 'react'
 
 const OrderLayout = ({
   children, 
-  details, 
-  orders
+  inspect, 
+  list
 }: {
   children: React.ReactNode, 
-  details: React.ReactNode,
-  orders: React.ReactNode
+  inspect: React.ReactNode,
+  list: React.ReactNode
 }) => {
   return (
     <>
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
         {children}
-        {orders}
+        {list}
       </div>
       <div>
-        {details}
+        {inspect}
       </div>
     </>
   )
