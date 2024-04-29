@@ -27,7 +27,7 @@ export default function ProductList() {
     setBooks(fetchedBooks);
     setTotalPage(fetchedTotalPage);
   };
-  
+
   useEffect(() => {
     fetchBooks(currentPage);
   }, [currentPage]);
@@ -36,44 +36,58 @@ export default function ProductList() {
     console.log("Previous button clicked");
     setCurrentPage((prevPage) => prevPage - 1);
   };
-  
+
   const handlePaginationNext = () => {
     console.log("Next button clicked");
     setCurrentPage((prevPage) => prevPage + 1);
   };
-
+  const handlePaginationClick = (pageIndex: number) => {
+    console.log("Page", pageIndex, "clicked");
+    setCurrentPage(pageIndex);
+  };
   return (
-    <div className='grid grid-cols-4 gap-5 mt-10'>
-      {books.map(product => (
-        <div key={product.id} className="border rounded p-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
-          <Link href={`/products/${product.id}`}>
-            <div>
-              <Image src={product.cover_image} alt={product.title} width={300} height={200} className="w-full h-48 object-cover mb-4" />
-              <h2 className="text-lg font-semibold">{product.title}</h2>
-              <p className="text-gray-600">${product.price.toString()}</p>
-            </div>
-          </Link>
-        </div>
-      ))}
+    <div className='grid'>
+      <div className='grid grid-cols-4 gap-5 mt-10'>
+        {books.map(product => (
+          <div key={product.id} className="border rounded p-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+            <Link href={`/products/${product.id}`}>
+              <div>
+                <Image src={product.cover_image} alt={product.title} width={300} height={200} className="w-full h-48 object-cover mb-4" />
+                <h2 className="text-lg font-semibold">{product.title}</h2>
+                <p className="text-gray-600">${product.price.toString()}</p>
+              </div>
+            </Link>
+          </div>
+        ))}
+
+      </div>
+      <div className='mt-10'>
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-          <Button onClick={handlePaginationPrevious}>
-  <PaginationPrevious />
-</Button>
+            <PaginationPrevious onClick={handlePaginationPrevious} />
           </PaginationItem>
           {[...Array(totalPage)].map((_, index) => (
             <PaginationItem key={index}>
-              <PaginationLink>{index + 1}</PaginationLink>
+              {currentPage === index + 1 ? (
+                <PaginationLink isActive className="active" onClick={() => handlePaginationClick(index + 1)}>
+                  {index + 1}
+                </PaginationLink>
+              ) : (
+                <PaginationLink onClick={() => handlePaginationClick(index + 1)}>
+                  {index + 1}
+                </PaginationLink>
+              )}
             </PaginationItem>
           ))}
           <PaginationItem>
-          <Button onClick={handlePaginationNext}>
-  <PaginationNext />
-</Button>
+            <PaginationNext onClick={handlePaginationNext} />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+      </div>
     </div>
+
+
   );
 }
