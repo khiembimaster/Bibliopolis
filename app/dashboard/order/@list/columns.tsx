@@ -18,10 +18,55 @@ export type Order = {
 
 export const columns: ColumnDef<Order>[] = [
   {
-    id: "actions",
+    accessorKey: "name",
+    header: "Customer", 
+    cell: ({row}) => {
+      const customer = row.getValue("name") as string
+      return <div className="font-medium">{customer}</div>
+    }
+  },
+  {
+    accessorKey: "email",
+    header: () => "Email", 
+    cell: ({row}) => {
+      const email = row.getValue("email") as string
+      return <div className="hidden text-sm text-muted-foreground md:inline">{email}</div>
+    }
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className="hidden sm:table-cell">Status</div>,
+    cell: ({row}) => {
+      const status = row.getValue("status") as string
+      return <Badge className="text-xs" variant="outline">{status}</Badge>
+    }
+  },
+  {
+    accessorKey: "date",
+    header:() =>  <div className="hidden md:table-cell">Date</div>, 
+    cell: ({row}) => {
+      const date = row.getValue("date") as string
+      return <div className="font-medium">{date}</div>
+    }
+  },
+  {
+    accessorKey: "amount",
+    header:() =>  <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const order = row.original
-      const router = useRouter()
+      const amount = parseFloat(row.getValue("amount"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+
+      return <div className="text-right">{formatted}</div>
+    },
+  },
+  {
+    id: "actions",
+    cell: function Action({ row }){
+      const router = useRouter();
+      const order = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -49,49 +94,5 @@ export const columns: ColumnDef<Order>[] = [
       )
     },
   },
-  {
-    accessorKey: "name",
-    header: "Customer", 
-    cell: ({row}) => {
-      const customer = row.getValue("name")
-      return <div className="font-medium">{customer}</div>
-    }
-  },
-  {
-    accessorKey: "email",
-    header: "Email", 
-    cell: ({row}) => {
-      const email = row.getValue("email")
-      return <div className="hidden text-sm text-muted-foreground md:inline">{email}</div>
-    }
-  },
-  {
-    accessorKey: "status",
-    header: <div className="hidden sm:table-cell">Status</div>,
-    cell: ({row}) => {
-      const status = row.getValue("status")
-      return <Badge className="text-xs" variant="outline">{status}</Badge>
-    }
-  },
-  {
-    accessorKey: "date",
-    header: <div className="hidden md:table-cell">Date</div>, 
-    cell: ({row}) => {
-      const date = row.getValue("date")
-      return <div className="font-medium">{date}</div>
-    }
-  },
-  {
-    accessorKey: "amount",
-    header: <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right">{formatted}</div>
-    },
-  }
 ]
+
