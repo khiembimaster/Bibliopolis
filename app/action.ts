@@ -258,6 +258,7 @@ const getBooksInCart = async (userId: string) => {
         return {
             id: book.bookId,
             book: {
+                id: bookDetail?.id || 0,
                 image: bookDetail?.cover_image || '', // Provide a fallback value if image is undefined
                 name: bookDetail?.title || '', // Provide a fallback value if name is undefined
                 price: Number(bookDetail?.price) || 0,
@@ -270,5 +271,39 @@ const getBooksInCart = async (userId: string) => {
     return transformedItems;
 }
 
+const createOrder = async (userId: string, cartId: number, shippingAddress: string, total_price: number, cartList: { id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]) => {
+    try {
+        const newOrder = await prisma.order.create({
+            data: {
+                userId: userId,
+                shipping_address: shippingAddress,
+                total_price: total_price,
+                billing_address: "",
+                status: "UNPAID",
+                order_date: new Date(),
+                books: {
+                    createMany: {
+                        data: cartList.map(item => ({
+                            bookId: item.book.id, 
+                            quantity: item.quantity
+                           
+                        }))
+                    }
+                }
+            },
+            select: {
+                id: true
+            }
+        });
+        await Promise.all(cartList.map(async item => {
+            await deleteCartItem(userId, cartId, item.book.id, 0);
+        }));
+        return newOrder;
+    } catch (error) {
+        console.error("Error creating order:", error);
+        throw new Error("Failed to create order");
+    }
+}
 
-export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart, updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook }
+export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
+     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder }

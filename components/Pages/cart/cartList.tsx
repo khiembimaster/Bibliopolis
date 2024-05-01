@@ -10,14 +10,27 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { PiMinus, PiPlus, PiTrash } from 'react-icons/pi';
-import { deleteCartItem, getBooksInCart, updateCartItemQuantity } from '@/app/action'; // Import the necessary action functions
+import { createOrder, deleteCartItem, getBooksInCart, updateCartItemQuantity } from '@/app/action'; // Import the necessary action functions
+import { useRouter } from 'next/navigation';
 
 export default function CartList() {
+    const router = useRouter();
     const userId = "clvictuww0001o83h8g7l3ddt";
     const cartId = 10;
-    const [items, setItems] = useState<{ id: number, book: { image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
+    const [items, setItems] = useState<{ id: number, book: {id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -35,9 +48,9 @@ export default function CartList() {
     const handleQuantityChange = async (index: number, newQuantity: number) => {
         const updatedItems = [...items];
         if (newQuantity < 1) {
-            newQuantity = 1; 
+            newQuantity = 1;
         } else if (newQuantity > items[index].book.quantity) {
-            newQuantity = items[index].book.quantity; 
+            newQuantity = items[index].book.quantity;
         }
         updatedItems[index].quantity = newQuantity;
         setItems(updatedItems);
@@ -45,7 +58,7 @@ export default function CartList() {
         // Update the item quantity and total price in the database
         const { id: bookId, book, quantity } = updatedItems[index];
         const total_price = items.reduce((total, item) => total + (item.quantity * item.book.price), 0);
-        const c = await updateCartItemQuantity(userId,cartId, bookId, newQuantity, total_price);
+        const c = await updateCartItemQuantity(userId, cartId, bookId, newQuantity, total_price);
     };
     const handleDeleteItem = async (index: number) => {
         const { id: bookId } = items[index];
@@ -56,6 +69,20 @@ export default function CartList() {
         const total_price = updatedItems.reduce((total, item) => total + (item.quantity * item.book.price), 0);
         await deleteCartItem(userId, cartId, bookId, total_price);
     };
+    const handleDone = async () => {
+        try {
+            const shippingAddress = document.getElementById('address') as HTMLInputElement; 
+            const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0); 
+            const newOrder = await createOrder(userId, cartId, shippingAddress.value, totalBill, items); 
+            
+            console.log("Order created successfully with ID:", newOrder.id);
+            router.push(`/order/${newOrder.id}`);
+
+        } catch (error) {
+            console.error("Failed to create order:", error);
+        }
+    };
+    
     return (
         <div className='grid gap-10 grid-cols-4 ms-10 mt-10'>
             <div className='col-span-3'>
@@ -103,9 +130,36 @@ export default function CartList() {
             </div>
             <div>
                 <div className='flex flex-col gap-3 my-5 w-full items-center'>
-                    {/* Tính tổng giá trị của giỏ hàng */}
                     <p>Total bill: ${items.reduce((total, item) => total + (item.quantity * item.book.price), 0)}</p>
-                    <Button size={'lg'}>Payment</Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button size={'lg'}>Payment</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Order information</DialogTitle>
+                                <DialogDescription>
+                                   
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="address" className="text-right">
+                                        Address
+                                    </Label>
+                                    <Input
+                                        id="address"
+                                        defaultValue="Pedro Duarte"
+                                        className="col-span-3"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleDone}>Done</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
         </div>
