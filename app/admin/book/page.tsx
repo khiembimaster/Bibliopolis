@@ -1,16 +1,10 @@
 
 import { auth } from '@/auth';
-import {AddbookSheet} from '@/components/ui/addbook-sheet'
+import {AddbookSheet} from '@/components/book-components/addbook-sheet'
+import { AddgenreSheet } from '@/components/book-components/addgenre-sheet';
 
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-  } from "@/components/ui/context-menu"
 
-import { Button } from "@/components/ui/button"
-import { BookTable } from '@/components/ui/book-table';
+import { BookTable } from '@/components/book-components/book-table';
 const Book = async () => {
     const session = await auth();
     
@@ -18,6 +12,7 @@ const Book = async () => {
 
   <p>Welcome to book management page</p>
   <AddbookSheet></AddbookSheet>
+  <AddgenreSheet></AddgenreSheet>
  <BookTable></BookTable>
 
        

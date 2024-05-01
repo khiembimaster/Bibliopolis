@@ -21,7 +21,7 @@ export default function RootLayout({
             <body className={"min-h-screen w-full bg-white text-black flex"}>
                 {/*side bar */}
                 <div className="flex">
-                    <div className="w-1/4 bg-gray-800 h-screen">
+                    <div className="w-1/6 bg-gray-800 h-screen">
                         <div className="flex items-center justify-center h-16 bg-gray-900">
                             <span className="text-white text-lg font-semibold">Logo</span>
                         </div>
@@ -37,7 +37,7 @@ export default function RootLayout({
                             <Link href="#" className="block py-2 px-4 text-gray-300 hover:text-white">Profile</Link>
                         </nav>
                     </div>
-                    <div className="w-3/4 bg-gray-100 h-screen">
+                    <div className="w-5/6 bg-gray-100 h-screen">
                         {children}
                     </div>
                 </div>
