@@ -11,6 +11,60 @@ const GetAllBook = async (currentPage: number, pageSize: number) => {
     const totalPage = Math.ceil(totalBooksCount / pageSize); // Calculate total pages
     return { books, totalPage };
 }
+const maxPriceBook = async () => {
+    const maxPrice = await prisma.book.findFirst({
+        select: {
+            price: true
+        },
+        orderBy: {
+            price: 'desc'
+        }
+    });
+    console.log(maxPrice?.price)
+    return Number(maxPrice?.price); 
+}
+const searchBooksByName = async (name: string, priceStart: number, priceFinish: number, currentPage: number, pageSize: number) => {
+    console.log("1112 " + priceStart )
+    const books = await prisma.book.findMany({
+        where: {
+            AND: [
+                {
+                    title: {
+                        contains: name 
+                    }
+                },
+                {
+                    price: {
+                        gte: priceStart, 
+                        lte: priceFinish 
+                    }
+                }
+            ]
+        },
+        skip: (currentPage - 1) * pageSize,
+        take: pageSize,
+    });
+    const totalBooksCount = await prisma.book.count({
+        where: {
+            AND: [
+                {
+                    title: {
+                        contains: name 
+                    }
+                },
+                {
+                    price: {
+                        gte: priceStart, 
+                        lte: priceFinish 
+                    }
+                }
+            ]
+        }
+    });
+    const totalPage = Math.ceil(totalBooksCount / pageSize); // Tính toán tổng số trang
+    return { books, totalPage };
+}
+
 
 const GetByBookDetail = async (id: number) => {
     const result = await prisma.book.findFirst({
@@ -217,4 +271,4 @@ const getBooksInCart = async (userId: string) => {
 }
 
 
-export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart, updateCartItemQuantity, deleteCartItem, getBooksInCart }
+export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart, updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook }

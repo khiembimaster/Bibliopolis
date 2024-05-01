@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GetAllBook } from '@/app/action';
+import { GetAllBook, maxPriceBook, searchBooksByName } from '@/app/action';
 import {
   Pagination,
   PaginationContent,
@@ -14,12 +14,21 @@ import {
 } from "@/components/ui/pagination"
 import { Button } from '@/components/ui/button';
 import { Book } from './Book';
-
+import { Slider } from "@/components/ui/slider"
 
 export default function ProductList() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [books, setBooks] = useState<Book[]>([]); // Provide the correct type for the initial state
+  const [books, setBooks] = useState<Book[]>([]);
   const [totalPage, setTotalPage] = useState(0);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null); // Add state for max price
+
+  useEffect(() => {
+    async function fetchData() {
+      await fetchBooks(currentPage);
+      await fetchMaxPrice();
+    }
+    fetchData();
+  }, [currentPage]);
 
   const fetchBooks = async (page: number) => {
     console.log("Fetching books for page:", page);
@@ -28,9 +37,10 @@ export default function ProductList() {
     setTotalPage(fetchedTotalPage);
   };
 
-  useEffect(() => {
-    fetchBooks(currentPage);
-  }, [currentPage]);
+  const fetchMaxPrice = async () => {
+    const max = await maxPriceBook();
+    setMaxPrice(max);
+  };
 
   const handlePaginationPrevious = () => {
     console.log("Previous button clicked");
@@ -41,12 +51,43 @@ export default function ProductList() {
     console.log("Next button clicked");
     setCurrentPage((prevPage) => prevPage + 1);
   };
+
   const handlePaginationClick = (pageIndex: number) => {
     console.log("Page", pageIndex, "clicked");
     setCurrentPage(pageIndex);
   };
+
+  const handleSearch = async () => {
+    const name = (document.getElementById("search") as HTMLInputElement).value;
+    const priceMin = Number((document.getElementById("priceMin") as HTMLInputElement).value);
+    const priceMax = Number((document.getElementById("priceMax") as HTMLInputElement).value); // If maxPrice is not set yet, use 0 as default
+    const { books: fetchedBooks, totalPage: fetchedTotalPage } = await searchBooksByName(name, priceMin, priceMax, currentPage, 10);
+    setBooks(fetchedBooks);
+    setTotalPage(fetchedTotalPage);
+  };
+
   return (
-    <div className='grid'>
+    <div className='grid '>
+      <div className='grid grid-cols-3'>
+        <div className="col-start-2 justify-self-end">
+          <div className=' inline-flex self-center'>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price min:</label>
+            <input type="number" id="priceMin" min={1} max={Number(maxPrice)} defaultValue={0} aria-describedby="helper-text-explanation" className="block w-full p-2.5 bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0" required />
+          </div>
+          <div className=' inline-flex self-center ms-3'>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price max:</label>
+            <input type="number" id="priceMax" min={1} max={Number(maxPrice)} defaultValue={Number(maxPrice)} aria-describedby="helper-text-explanation" className="block w-full p-2.5 bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0" required />
+          </div>
+        </div>
+        <div className="flex ms-3 col-start-3">
+          <div className=" flex-grow mr-4">
+            <input type="search" id="search" className="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..." required />
+          </div>
+          <div>
+            <Button className="h-full" onClick={handleSearch}>Search</Button>
+          </div>
+        </div>
+      </div>
       <div className='grid grid-cols-4 gap-5 mt-10'>
         {books.map(product => (
           <div key={product.id} className="border rounded p-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
@@ -59,35 +100,32 @@ export default function ProductList() {
             </Link>
           </div>
         ))}
-
       </div>
       <div className='mt-10'>
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious onClick={handlePaginationPrevious} />
-          </PaginationItem>
-          {[...Array(totalPage)].map((_, index) => (
-            <PaginationItem key={index}>
-              {currentPage === index + 1 ? (
-                <PaginationLink isActive className="active" onClick={() => handlePaginationClick(index + 1)}>
-                  {index + 1}
-                </PaginationLink>
-              ) : (
-                <PaginationLink onClick={() => handlePaginationClick(index + 1)}>
-                  {index + 1}
-                </PaginationLink>
-              )}
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious onClick={handlePaginationPrevious} />
             </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext onClick={handlePaginationNext} />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {[...Array(totalPage)].map((_, index) => (
+              <PaginationItem key={index}>
+                {currentPage === index + 1 ? (
+                  <PaginationLink isActive className="active" onClick={() => handlePaginationClick(index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                ) : (
+                  <PaginationLink onClick={() => handlePaginationClick(index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext onClick={handlePaginationNext} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
-
-
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import HeaderDropdownMenu from "./header-dropdown-menu"
 import HeaderShoppingCart from "./header-shopping-cart"
+import { AvatarDemo } from "./header-avatar"
 
 export default function Header(){
     return(
@@ -17,6 +18,7 @@ export default function Header(){
             <div className={'flex items-center gap-5'}>
                 <HeaderDropdownMenu/>
                 <HeaderShoppingCart/>
+                <AvatarDemo/>
             </div>
             </div>  
         </header>
