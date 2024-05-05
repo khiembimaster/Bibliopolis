@@ -34,7 +34,7 @@ export const OrderDetailsCard = ({order}: Props ) => {
         <div className="grid gap-0.5">
           <CardTitle className="group flex items-center gap-2 text-lg">
             Order 
-            <div className='text-ellipsis overflow-hidden md:max-w-24'>
+            <div className='text-ellipsis overflow-hidden md:max-w-20'>
               {order.id}
             </div>
             <Button
