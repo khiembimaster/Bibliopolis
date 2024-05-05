@@ -1,3 +1,4 @@
+
 import NextAuth, { type DefaultSession } from "next-auth"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
@@ -48,4 +49,5 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
       return session
     },
   },
+  secret: '7SbIYMw4oF/sPKpbnzy1ZZ/i2DtpRhcezh/Px9VydFc=',
 })

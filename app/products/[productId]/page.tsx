@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { ToastAction } from "@/components/ui/toast"
-
+import { EmojiStyle } from 'emoji-picker-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { PiMinus, PiPlus } from 'react-icons/pi';
@@ -16,7 +16,7 @@ export default function ProductDetailPage() {
     let productId : string = router.productId as unknown as string
 
     const [product, setProduct] = useState<NonNullable<any>>(null);
-
+    const { toast } = useToast()
     useEffect(() => {
         const fetchProduct = async () => {
             const fetchedProduct = await GetByBookDetail(parseInt(productId)); 
@@ -37,6 +37,9 @@ export default function ProductDetailPage() {
         //const creatCart = await createCart("clvictuww0001o83h8g7l3ddt",price,parseInt(productId),Number(Quantity.value) );
         // const add = await addToCart(parseInt(productId), creatCart.id, Number(Quantity.value) )
         const updateCart = await updateItemCart("clvictuww0001o83h8g7l3ddt",price,10,parseInt(productId),Number(Quantity.value));
+        toast({
+            title:  "✅ Product added to cart",
+          })
     }
     return (
         <div className='container my-6'>
@@ -68,7 +71,7 @@ export default function ProductDetailPage() {
                             </form>
                         </div>
                         <Button size={'lg'} className='w-full text-lg' onClick={handle}>
-                            Add to cart
+                            ➕ Add to cart
                         </Button>
                     </div>
                 </div>

@@ -2,6 +2,8 @@ import Link from "next/link"
 import HeaderDropdownMenu from "./header-dropdown-menu"
 import HeaderShoppingCart from "./header-shopping-cart"
 import { AvatarDemo } from "./header-avatar"
+import SignIn_SignOut from "./header-login-logout"
+
 
 export default function Header(){
     return(
@@ -14,11 +16,12 @@ export default function Header(){
                 <Link href={'/'}>Home Page</Link>
                 <Link href={'/products'}>Product</Link>
                 <Link href={'/about'}>About</Link>
+
             </div>
             <div className={'flex items-center gap-5'}>
                 <HeaderDropdownMenu/>
                 <HeaderShoppingCart/>
-                <AvatarDemo/>
+                <SignIn_SignOut/>
             </div>
             </div>  
         </header>
