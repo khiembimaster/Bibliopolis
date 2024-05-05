@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Order, Book, ShippingInfo} from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import CopyToClipBoardBtn from './CopyToClipBoardBtn'
 
 interface Props {
   order: Order & {
@@ -37,14 +38,7 @@ export const OrderDetailsCard = ({order}: Props ) => {
             <div className='text-ellipsis overflow-hidden md:max-w-20'>
               {order.id}
             </div>
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <Copy className="h-3 w-3" />
-              <span className="sr-only">Copy Order ID</span>
-            </Button>
+            <CopyToClipBoardBtn key={order.id} orderId={order.id}/>
           </CardTitle>
           <CardDescription>Date: {order.order_date.toDateString()}</CardDescription>
         </div>
