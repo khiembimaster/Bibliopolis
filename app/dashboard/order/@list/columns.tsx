@@ -6,31 +6,43 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Decimal } from "@prisma/client/runtime/library"
+
+export type User = {
+  name: string | null,
+  email: string | null,
+}
 
 export type Order = {
   id: string,
-  name: string,
-  email: string,
+  user: User,
   status: string,
-  date: string
-  amount: number
+  order_date: Date
+  total_price: Decimal
 }
 
 export const columns: ColumnDef<Order>[] = [
   {
-    accessorKey: "name",
-    header: "Customer", 
+    accessorKey: "id",
+    header: "Order", 
     cell: ({row}) => {
-      const customer = row.getValue("name") as string
-      return <div className="font-medium">{customer}</div>
+      const id = row.getValue("id") as string
+      return <div className="font-medium">{id}</div>
     }
   },
   {
-    accessorKey: "email",
-    header: () => "Email", 
+    accessorKey: "user",
+    header: () => "User", 
     cell: ({row}) => {
-      const email = row.getValue("email") as string
-      return <div className="hidden text-sm text-muted-foreground md:inline">{email}</div>
+      const user = row.getValue("user") as User
+      return(
+        <>
+          <div className="font-medium">{user.name}</div>
+          <div className="hidden text-sm text-muted-foreground md:inline">
+            {user.email}
+          </div>
+        </>
+      )
     }
   },
   {
@@ -42,18 +54,18 @@ export const columns: ColumnDef<Order>[] = [
     }
   },
   {
-    accessorKey: "date",
+    accessorKey: "order_date",
     header:() =>  <div className="hidden md:table-cell">Date</div>, 
     cell: ({row}) => {
-      const date = row.getValue("date") as string
-      return <div className="font-medium">{date}</div>
+      const date = row.getValue("order_date") as Date
+      return <div className="font-medium">{date.toLocaleDateString()}</div>
     }
   },
   {
-    accessorKey: "amount",
+    accessorKey: "total_price",
     header:() =>  <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
+      const amount = parseFloat(row.getValue("total_price"))
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",

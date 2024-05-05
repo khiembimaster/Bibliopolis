@@ -23,35 +23,39 @@ const flattenData = () => {
 }
 
 const OrderTable = async () => {
-  // const orders = await prisma.order.findMany({
-  //   include: {
-  //     user: {
-  //       select: {
-  //         name: true,
-  //         email: true,
-  //       },
-  //     },
-  //   }
-  // });
+  const orders = await prisma.order.findMany({
+    select: {
+      id:true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      status: true,
+      order_date: true,
+      total_price: true
+    }
+  });
 
-  const orders = [
-    {
-      id: "1",
-      name: "khiem",
-      email: "khiembi@123",
-      status: "Pending",
-      date: "25-1-2003",
-      amount: 1.2,
-    },
-    {
-      id: "2",
-      name: "khiem",
-      email: "khiembi@123",
-      status: "Pending",
-      date: "25-1-2003",
-      amount: 1.2,
-    },
-  ]
+  // const orders = [
+  //   {
+  //     id: "1",
+  //     name: "khiem",
+  //     email: "khiembi@123",
+  //     status: "Pending",
+  //     date: "25-1-2003",
+  //     amount: 1.2,
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "khiem",
+  //     email: "khiembi@123",
+  //     status: "Pending",
+  //     date: "25-1-2003",
+  //     amount: 1.2,
+  //   },
+  // ]
 
   return (
     <DataTable columns={columns} data={orders} />
