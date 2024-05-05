@@ -16,7 +16,7 @@ const GetAllBook = async () =>{
 }
 
 const CreateBook = async function createBook(title: string, date: Date, author: string,
-    prices: number, quantity: number, publisher: string, image:string ){
+    prices: number, quantity: number, publisher: string, image:string, idGenre: number ){
     
     const book = await prisma.book.create({
         data: {
@@ -29,8 +29,11 @@ const CreateBook = async function createBook(title: string, date: Date, author: 
             cover_image: image,
             isbn: '',
             description: '',
-            rating: 0
-        }
+            rating: 0 ,
+            genres: {
+                connect: {id: idGenre}
+            }
+        } 
     });
 }
 
@@ -43,8 +46,8 @@ const CreateGenre  = async function createGenre(name: string, description: strin
     })
 }
 
-const GetAllGenre = async() => {
-    const getAllGenre = await prisma.genre.findMany({
+const GetAllGenre = async () => {
+    const getAllGenre =  prisma.genre.findMany({
         include: {
             books:true
         }
@@ -79,7 +82,6 @@ const UpdateBook = async function updateBook(id: number, data: Book){
             genres: {
                 set: instance?.genres
             }
-
         }
     })
 }
@@ -98,5 +100,19 @@ const AddBookToGenre = async function addBookToGenre(idBook: number, idGenre: nu
     })
 }
 
-export {CreateBook,GetAllBook,UpdateBook,CreateGenre,GetAllGenre,AddBookToGenre}
+const RemoveGenre = async function removeGenre(idBook: number, idGenre: number) {
+
+    const updateBook = await prisma.book.update({
+        where:{id:idBook},
+        data: {
+            genres:{
+                disconnect:{
+                    id: idGenre
+                }
+            }
+        }
+    })
+}
+
+export {CreateBook, GetAllBook, UpdateBook, CreateGenre, GetAllGenre, AddBookToGenre, RemoveGenre}
 

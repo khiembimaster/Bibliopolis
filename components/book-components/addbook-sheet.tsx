@@ -1,4 +1,4 @@
-'use client'
+'use server'
 import { Input } from '@/components/ui/input'
 import {
     Card,
@@ -16,10 +16,26 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { CreateBook } from '@/app/actions'
+import { GetAllGenre } from '@/app/actions'
+import { GenreItem } from './genre-item'
+import { Genre } from '@prisma/client'
+import React, { useEffect, useState } from 'react';
+import { AddbookButton } from './addbook-button'
 
-const AddbookSheet = () => {
+
+
+const AddbookSheet = async () => {
+
+    let genres = await GetAllGenre();
+
+
     return <main>
         <Sheet>
             <SheetTrigger className='border p-2 bg-black text-white rounded-full'>
@@ -48,6 +64,23 @@ const AddbookSheet = () => {
                                     <Input id='price' />
                                 </CardDescription>
                             </CardContent>
+                            <CardContent>
+
+                                <div className="combobox">
+                                    <select id="genreCombobox">
+                                   
+                                        {genres.map((genre) => (
+                                            
+                                                <option key={genre.id} value={genre.id}>{genre.name}</option>
+                                        
+                                        ))}
+                                    </select>
+                                </div>
+
+
+                            </CardContent>
+
+
 
                             <CardContent>
 
@@ -77,27 +110,15 @@ const AddbookSheet = () => {
                             </CardContent>
 
                             <CardContent>
-                                <Button onClick={handle}>submit</Button>
+                                <AddbookButton></AddbookButton>
                             </CardContent>
                         </Card>
                     </SheetDescription>
                 </SheetHeader>
             </SheetContent>
         </Sheet>
-    </main>
+    </main >
 }
 
-const handle = () => {
-    const inputTitle = document.getElementById('title') as HTMLInputElement;
-    const inputDate = document.getElementById('date') as HTMLInputElement;
-    const inputAuthor = document.getElementById('author') as HTMLInputElement;
-    const inputPrice = document.getElementById('price') as HTMLInputElement;
-    const inputQuantity = document.getElementById('quantity') as HTMLInputElement;
-    const inputPublisher = document.getElementById('publisher') as HTMLInputElement;
-    const inputImage = document.getElementById('image') as HTMLInputElement;
 
-    CreateBook(inputTitle.value, new Date(inputDate.value), inputAuthor.value,
-        Number(inputPrice.value), Number(inputQuantity.value), inputPublisher.value, inputImage.value)
-        
-}
 export { AddbookSheet };

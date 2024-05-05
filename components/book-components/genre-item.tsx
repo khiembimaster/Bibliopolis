@@ -9,9 +9,9 @@ interface MyComponentProps{
 
 }
 const GenreItem : React.FC<MyComponentProps> = ({genre,bookid}) =>{
-    return  <li className='hover:bg-blue-200 cursor-pointer' onClick={()=>{
+    return <li className='hover:bg-blue-200 cursor-pointer' onClick={()=>{
         AddBookToGenre(bookid,genre.id)
-    }}>{genre.name}</li>
+    }}>{genre.name}</li> 
 
 }
 export {GenreItem}
