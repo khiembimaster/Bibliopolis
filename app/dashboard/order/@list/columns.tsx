@@ -60,7 +60,8 @@ export const columns: ColumnDef<Order>[] = [
     },
     cell: ({row}) => {
       const date = row.getValue("order_date") as Date
-      return <div className="font-medium text-right md:mr-10">{date.toLocaleDateString()}</div>
+      const formatted = new Intl.DateTimeFormat('en-GB').format(date);
+      return <div className="font-medium text-right md:mr-10">{formatted}</div>
     }
   },
   {
