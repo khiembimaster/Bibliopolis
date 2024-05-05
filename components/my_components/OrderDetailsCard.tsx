@@ -33,7 +33,10 @@ export const OrderDetailsCard = ({order}: Props ) => {
       <CardHeader className="flex flex-row items-start bg-muted/50">
         <div className="grid gap-0.5">
           <CardTitle className="group flex items-center gap-2 text-lg">
-            Order {order.id}
+            Order 
+            <div className='text-ellipsis overflow-hidden md:max-w-24'>
+              {order.id}
+            </div>
             <Button
               size="icon"
               variant="outline"
