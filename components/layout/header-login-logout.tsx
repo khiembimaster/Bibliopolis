@@ -1,27 +1,25 @@
-'use client'
-import React from 'react'
-import Image from 'next/image';
-import { Button } from '../ui/button';
-import { Role } from '@prisma/client';
-import { signIn,signOut, auth } from '@/auth';
+"use client";
+import React from "react";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 // eslint-disable-next-line @next/next/no-async-client-component
-export default async function SigninButton() {
-  const session = await auth();
-  if (session?.user?.role === Role.USER) {
+export default function SigninButton({ session }: { session: any }) {
+  console.log(session);
+  if (session?.user) {
     return (
       <div className="flex gap-4 ml-auto items-center">
         <p className="text-sky-600">{session.user.name}</p>
-        <Button onClick={() => signOut} className="text-red-600">
-          Sign Out
-        </Button>
+        <Link href="/api/auth/signout">
+          <Button className="text-red-600">Sign Out</Button>
+        </Link>
       </div>
-    )
+    );
   }
 
   return (
-    <Button onClick={() => signIn} className="text-green-600 ml-auto">
-      Sign In
-    </Button>
-  )
+    <Link href="/api/auth/signin">
+      <Button className="text-green-600 ml-auto">Sign In</Button>
+    </Link>
+  );
 }
