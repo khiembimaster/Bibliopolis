@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Decimal } from "@prisma/client/runtime/library"
 
@@ -22,14 +22,6 @@ export type Order = {
 }
 
 export const columns: ColumnDef<Order>[] = [
-  {
-    accessorKey: "id",
-    header: "Order", 
-    cell: ({row}) => {
-      const id = row.getValue("id") as string
-      return <div className="font-medium">{id}</div>
-    }
-  },
   {
     accessorKey: "user",
     header: () => "User", 
@@ -55,15 +47,35 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "order_date",
-    header:() =>  <div className="hidden md:table-cell">Date</div>, 
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({row}) => {
       const date = row.getValue("order_date") as Date
-      return <div className="font-medium">{date.toLocaleDateString()}</div>
+      return <div className="font-medium text-right md:mr-10">{date.toLocaleDateString()}</div>
     }
   },
   {
     accessorKey: "total_price",
-    header:() =>  <div className="text-right">Amount</div>,
+    header:({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Amount
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("total_price"))
       const formatted = new Intl.NumberFormat("en-US", {
@@ -71,7 +83,7 @@ export const columns: ColumnDef<Order>[] = [
         currency: "USD",
       }).format(amount)
 
-      return <div className="text-right">{formatted}</div>
+      return <div className="text-right md:mr-10">{formatted}</div>
     },
   },
   {
