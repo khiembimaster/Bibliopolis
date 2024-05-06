@@ -85,7 +85,7 @@ const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
                         <TableCell>
                             <Input id={"inputTitle" + String(book.id)} defaultValue={book.title} />
                         </TableCell>
-                        <TableCell>
+                        <TableCell> 
                             <Input id={"inputAuthor" + String(book.id)} defaultValue={book.author} />
                         </TableCell>
                         <TableCell>
@@ -95,7 +95,7 @@ const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
 
                         <TableCell> <Input id={"inputIsbn" + String(book.id)} defaultValue={book.isbn} /></TableCell>
                         <TableCell> <Input id={"inputPrice" + String(book.id)} defaultValue={book.price.toString()} /></TableCell>
-                        <TableCell><Input id={"inputPublisher" + String(book.id)} defaultValue={book.publisher} /></TableCell>
+                        <TableCell> <Input id={"inputPublisher" + String(book.id)} defaultValue={book.publisher} /> </TableCell>
                         <TableCell><Input id={"inputDate" + String(book.id)} type="date" defaultValue={formatDate(book.publication_year.toLocaleDateString())} />
 
                         </TableCell>

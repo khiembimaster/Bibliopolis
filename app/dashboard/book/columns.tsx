@@ -15,9 +15,7 @@ export const columns: ColumnDef<BookFull>[] = [
       return(
         <>
           <div className="font-medium">{row.id}</div>
-          <div className="hidden text-sm text-muted-foreground md:inline">
-            {row.id}
-          </div>
+      
         </>
       )
     }
@@ -49,9 +47,45 @@ export const columns: ColumnDef<BookFull>[] = [
         //const genres = book.genres;
       return <div className="text-right md:mr-10">
          <GenreList book={book}></GenreList>
-          {/* <AddGenreButton book={book}  /> */}
+          <AddGenreButton book={book}  />
       </div>
     },
-  }
+  },
+  {
+    accessorKey: "isbn",
+    header:() => <div className="hidden sm:table-cell">Isbn</div>,
+    
+    cell: ({ row }) => {
+        const book =row.original;
+        //const genres = book.genres;
+      return   <Input id={"inputIsbn" + String(book.id)} defaultValue={book.isbn}/>
+    },
+  },
+  {
+    accessorKey: "price",
+    header:() => <div className="hidden sm:table-cell">Price</div>,
+    
+    cell: ({ row }) => {
+        const book =row.original;
+        //const genres = book.genres;
+      return    <Input id={"inputPrice" + String(book.id)} defaultValue={book.price.toString()} />
+    },
+  },
 
+  {
+    accessorKey: "publisher",
+    header:() => <div className="hidden sm:table-cell">Publisher</div>,
+    
+    cell: ({ row }) => {
+        const book =row.original;
+        //const genres = book.genres;
+      return    <Input id={"inputPublisher" + String(book.id)} defaultValue={book.publisher} /> 
+    },
+  },
+  
+
+
+
+
+ 
 ]
