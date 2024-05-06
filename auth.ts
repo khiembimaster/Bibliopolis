@@ -1,4 +1,3 @@
-
 import NextAuth, { type DefaultSession } from "next-auth"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
