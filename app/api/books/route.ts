@@ -17,7 +17,12 @@ export async function POST(req: Request) {
       cover_image: cover_image,
       publisher: publisher,
       stock_quantity: stock_quantity,
-      rating: rating
+      rating: rating,
+      genres: {
+        connect: {
+          id: 1
+        }
+      }
     }
   })
   if (!result) return Response.json({

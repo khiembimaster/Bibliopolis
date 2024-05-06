@@ -23,7 +23,7 @@ const maxPriceBook = async () => {
     console.log(maxPrice?.price)
     return Number(maxPrice?.price); 
 }
-const searchBooksByName = async (name: string, priceStart: number, priceFinish: number, currentPage: number, pageSize: number) => {
+const searchBooksByName = async (name: string, genreId: number, priceStart: number, priceFinish: number, currentPage: number, pageSize: number) => {
     console.log("1112 " + priceStart )
     const books = await prisma.book.findMany({
         where: {
@@ -38,7 +38,15 @@ const searchBooksByName = async (name: string, priceStart: number, priceFinish: 
                         gte: priceStart, 
                         lte: priceFinish 
                     }
+                },
+                {
+                    genres : {
+                        some: {
+                            id: genreId
+                        }
+                    }
                 }
+                
             ]
         },
         skip: (currentPage - 1) * pageSize,
@@ -304,6 +312,16 @@ const createOrder = async (userId: string, cartId: number, shippingAddress: stri
         throw new Error("Failed to create order");
     }
 }
+const findAllGenre = async () => {
+    try {
 
+        const genres = await prisma.genre.findMany();
+
+        return genres;
+    } catch (error) {
+        console.error("Error finding all genres:", error);
+        throw new Error("Failed to find all genres");
+    }
+}
 export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
-     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder }
+     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder,findAllGenre }
