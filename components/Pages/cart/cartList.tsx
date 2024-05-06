@@ -30,7 +30,7 @@ export default function CartList() {
     const router = useRouter();
     const userId = "clvictuww0001o83h8g7l3ddt";
     const cartId = 10;
-    const [items, setItems] = useState<{ id: number, book: {id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
+    const [items, setItems] = useState<{ id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -71,15 +71,47 @@ export default function CartList() {
     };
     const handleDone = async () => {
         try {
-            const shippingAddress = document.getElementById('address') as HTMLInputElement; 
-            const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0); 
-            const newOrder = await createOrder(userId, cartId, shippingAddress.value, totalBill, items); 
-            
+            const shippingAddress = document.getElementById('address') as HTMLInputElement;
+            const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0);
+            const newOrder = await createOrder(userId, cartId, shippingAddress.value, totalBill, items);
+
             console.log("Order created successfully with ID:", newOrder.id);
             router.push(`/order/${newOrder.id}`);
 
         } catch (error) {
             console.error("Failed to create order:", error);
+        }
+    };
+    const checkout = async () => {
+        const shippingAddress = document.getElementById('address') as HTMLInputElement;
+        console.log(shippingAddress.value)
+        const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0);
+        try {
+            const response = await fetch("http://localhost:3000/api/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    products: items,
+                    userId,
+                    cartId,
+                    shippingAddress: shippingAddress.value,
+                    totalBill: totalBill
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const responseData = await response.json();
+            console.log(responseData);
+            if (responseData.url) {
+                window.location.href = responseData.url;
+            }
+        } catch (error) {
+            console.error("Error during checkout:", error);
         }
     };
     
@@ -139,7 +171,7 @@ export default function CartList() {
                             <DialogHeader>
                                 <DialogTitle>Order information</DialogTitle>
                                 <DialogDescription>
-                                   
+
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
@@ -156,7 +188,7 @@ export default function CartList() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button onClick={handleDone}>Done</Button>
+                                <Button onClick={checkout}>Done</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
