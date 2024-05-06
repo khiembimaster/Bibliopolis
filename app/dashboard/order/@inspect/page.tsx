@@ -1,5 +1,6 @@
 import prisma from '@/client'
 import { OrderDetailsCard } from '@/components/my_components/OrderDetailsCard'
+import { SkeletonCard } from '@/components/my_components/SkeletonCard'
 import { get } from 'http'
 import React from 'react'
 
@@ -46,7 +47,7 @@ const Inspect = async ({searchParams: {orderId}}:Props) => {
     )
   }catch {
     return (
-      <h1>Order not exist</h1>
+      <SkeletonCard/>
     )
   }
 }
