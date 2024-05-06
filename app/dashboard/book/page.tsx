@@ -8,17 +8,12 @@ import { BookTable } from '@/components/book-components/book-table';
 const Book = async () => {
     const session = await auth();
     
-    return <main>
-
-  <p>Welcome to book management page</p>
-  <AddbookSheet></AddbookSheet>
-  <AddgenreSheet></AddgenreSheet>
- <BookTable></BookTable>
-
-       
-    </main>
-
-
+    return (<div className='grid col-span-3'>
+            <p>Welcome to book management page</p>
+            <AddbookSheet></AddbookSheet>
+            <AddgenreSheet></AddgenreSheet>
+            <BookTable></BookTable>     
+          </div>)
 
 }
 
