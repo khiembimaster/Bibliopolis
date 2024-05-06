@@ -7,7 +7,9 @@ import { Decimal } from '@prisma/client/runtime/library'
 
 interface SaleInfo {
   current_total: number,
-  delta: number
+  last_total: number,
+  delta: number,
+  progress: number,
   direction: string
 }
 
@@ -40,8 +42,9 @@ async function getDeltaSale(t1: Date, t2: Date) {
   var last_total = last._sum.total_price?.toNumber();
   last_total = last_total !== undefined ? last_total : 0;
   const direction = current_total > last_total ? '+' : '-';
-  const delta = (Math.abs(current_total - last_total) / last_total) * 100;
-  return {current_total, delta, direction};
+  const delta = Math.abs(current_total - last_total) / last_total * 100;
+  const progress = current_total / last_total * 100
+  return {current_total, last_total, delta, progress, direction};
 }
 
 const OrderManagementPage = async () => {
@@ -50,6 +53,8 @@ const OrderManagementPage = async () => {
   const thisMonday = new Date(today.setDate(today.getDate() - (today.getDay() || 7) + 1));
   const lastMonday = new Date(thisMonday.getFullYear(), thisMonday.getMonth(), thisMonday.getDate()-7);
   const weekSaleInfo:SaleInfo = await getDeltaSale(thisMonday, lastMonday);
+  
+  console.log(weekSaleInfo.current_total + '-' + weekSaleInfo.last_total);
 
   const startOfThisMonth = new Date(today.setDate(1));
   const startOfLastMonth = new Date(startOfThisMonth.getFullYear(), startOfThisMonth.getMonth() - 1, 1);
@@ -82,7 +87,7 @@ const OrderManagementPage = async () => {
           </div>
         </CardContent>
         <CardFooter>
-          <Progress value={25} aria-label="25% increase" />
+          <Progress value={weekSaleInfo.progress}/>
         </CardFooter>
       </Card>
       <Card x-chunk="dashboard-05-chunk-2">
@@ -96,7 +101,7 @@ const OrderManagementPage = async () => {
           </div>
         </CardContent>
         <CardFooter>
-          <Progress value={12} aria-label="12% increase" />
+          <Progress value={monthSaleInfo.progress} />
         </CardFooter>
       </Card>
     </div>
