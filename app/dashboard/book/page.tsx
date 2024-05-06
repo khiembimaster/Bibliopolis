@@ -5,6 +5,8 @@ import { AddgenreSheet } from '@/components/book-components/addgenre-sheet';
 import { GetAllBook, GetAllGenre } from '@/app/actions';
 import React, { useEffect, useState } from 'react';
 import { BookTable } from '@/components/book-components/book-table';
+import { DataTable } from './data-table';
+import { columns } from './columns';
 const Book = async () => {
   
 
@@ -15,12 +17,11 @@ const Book = async () => {
     console.log("books")
 
     return <main>
-
+      
   <p>Welcome to book management page</p>
   <AddbookSheet></AddbookSheet>
   <AddgenreSheet></AddgenreSheet>
- <BookTable books={books} genres={genres}></BookTable>
-
+  <DataTable columns={columns} data={books} ></DataTable>
        
     </main>
 

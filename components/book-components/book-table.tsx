@@ -24,6 +24,17 @@ import { BookFull, GenreFull } from "@/type/type";
 import { useEffect, useState } from "react";
 import { Item } from "@radix-ui/react-context-menu";
 import { GenreList } from "./genreList";
+import {
+    ColumnDef,
+    ColumnFiltersState,
+    SortingState,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+  } from "@tanstack/react-table"
 function formatDate(inputDate: string): string {
     const parts = inputDate.split("/");
     const day = parts[0].padStart(2, "0");
@@ -40,6 +51,7 @@ interface MyComponentProps{
     books: BookFull[]
     genres: GenreFull[]
 }
+
 
 
 const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
@@ -107,8 +119,26 @@ const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
                     </TableRow>
                 ))}
             </TableBody>
-
+            <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </Table>
+        
     )
 }
 

@@ -17,13 +17,14 @@ import { BookFull, GenreFull } from '@/type/type';
 
 interface MyComponentProps {
     book: BookFull
-    genres: GenreFull[]
+    // genres: GenreFull[]
 }
 
 
 
-const AddGenreButton: React.FC<MyComponentProps> = ({book,genres}) => {
+const AddGenreButton: React.FC<MyComponentProps> = async ({book}) => {
 
+    const genres =await GetAllGenre()
 
     return <Popover>
         <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >⇦</PopoverTrigger>
