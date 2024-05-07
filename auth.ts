@@ -28,6 +28,7 @@ export const { handlers, auth, signIn, signOut} = NextAuth({
     },
     async session({ session, token }) {
       session.user.role = token.role;
+      session.user.id = token.id;
       return session;
     },
   },

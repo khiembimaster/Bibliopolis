@@ -128,22 +128,29 @@ const deleteItemCart = async (id: number) => {
     })
     return result;
 }
+const getCart = async (userId: string) => {
+    const existingCart = await prisma.cart.findFirst({
+        where: {
+            userId: userId
+        },
+    });
+    return existingCart?.id
 
-const updateItemCart = async (userId: string, total_price: number,cartId: number, bookId: number, quantity: number) => {
+}
+const updateItemCart = async (userId: string, total_price: number, cartId: number, bookId: number, quantity: number) => {
     const existingCart = await prisma.cart.findUnique({
         where: {
             userId: userId,
         },
     });
+
     if (existingCart) {
-        console.log(existingCart)
         const existingItem = await prisma.booksToCarts.findFirst({
             where: {
                 bookId: bookId,
-                cartId: cartId,
+                cartId: Number(existingCart?.id),
             },
         });
-    
         if (existingItem) {
             const updatedCart = await prisma.cart.update({
                 where: {
@@ -153,22 +160,21 @@ const updateItemCart = async (userId: string, total_price: number,cartId: number
                     total_price: total_price,
                     books: {
                         update: {
-                            where: { 
-                                bookId_cartId: { 
-                                    bookId: bookId, 
-                                    cartId:cartId 
-                                } 
+                            where: {
+                                bookId_cartId: {
+                                    bookId: bookId,
+                                    cartId: Number(existingCart?.id),
+                                },
                             },
                             data: {
-                                quantity: quantity + existingItem.quantity
-                            }
-                        }
-                    }     
+                                quantity: quantity + existingItem.quantity,
+                            },
+                        },
+                    },
                 },
             });
             return updatedCart;
-        }
-        else{
+        } else {
             const updatedCart = await prisma.cart.update({
                 where: {
                     userId: userId,
@@ -185,8 +191,8 @@ const updateItemCart = async (userId: string, total_price: number,cartId: number
             });
             return updatedCart;
         }
-        
     } else {
+        // Nếu người dùng chưa có giỏ hàng, tạo mới giỏ hàng và thêm sách vào
         const newCart = await prisma.cart.create({
             data: {
                 userId: userId,
@@ -201,9 +207,14 @@ const updateItemCart = async (userId: string, total_price: number,cartId: number
         });
         return newCart;
     }
+};
 
-}
 const updateCartItemQuantity = async (userId: string, cartId: number, bookId: number, newQuantity: number, total_price: number) => {
+    const existingCart = await prisma.cart.findFirst({
+        where: {
+            userId: userId
+        },
+    });
     const updatedCart = await prisma.cart.update({
         where: {
             userId: userId
@@ -215,7 +226,7 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
                     where: { 
                         bookId_cartId: { 
                             bookId: bookId, 
-                            cartId:cartId 
+                            cartId: Number(existingCart?.id) 
                         } 
                     },
                     data: {
@@ -231,7 +242,11 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
 
 
 const deleteCartItem = async (userId: string, cartId: number, bookId: number, total_price: number) => {
-
+    const existingCart = await prisma.cart.findFirst({
+        where: {
+            userId: userId
+        },
+    });
     const updatedCart = await prisma.cart.update({
         where: {
             userId: userId
@@ -239,7 +254,7 @@ const deleteCartItem = async (userId: string, cartId: number, bookId: number, to
         data: {
             total_price: total_price,
             books: {
-                deleteMany: [{ bookId: bookId, cartId: cartId }],
+                deleteMany: [{ bookId: bookId, cartId:  Number(existingCart?.id) }],
             }
         }
     });
@@ -281,6 +296,11 @@ const getBooksInCart = async (userId: string) => {
 
 const createOrder = async (userId: string, cartId: number, shippingAddress: string, total_price: number, cartList: { id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]) => {
     try {
+        const existingCart = await prisma.cart.findFirst({
+            where: {
+                userId: userId
+            },
+        });
         const newOrder = await prisma.order.create({
             data: {
                 userId: userId,
@@ -304,7 +324,7 @@ const createOrder = async (userId: string, cartId: number, shippingAddress: stri
             }
         });
         await Promise.all(cartList.map(async item => {
-            await deleteCartItem(userId, cartId, item.book.id, 0);
+            await deleteCartItem(userId,  Number(existingCart?.id), item.book.id, 0);
         }));
         return newOrder;
     } catch (error) {
@@ -324,4 +344,4 @@ const findAllGenre = async () => {
     }
 }
 export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
-     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder,findAllGenre }
+     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder,findAllGenre, getCart }

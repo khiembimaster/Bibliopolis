@@ -23,13 +23,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PiMinus, PiPlus, PiTrash } from 'react-icons/pi';
-import { createOrder, deleteCartItem, getBooksInCart, updateCartItemQuantity } from '@/app/action'; // Import the necessary action functions
+import { createOrder, deleteCartItem, getBooksInCart, getCart, updateCartItemQuantity } from '@/app/action'; // Import the necessary action functions
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function CartList() {
+    const {data: session, status} = useSession()
     const router = useRouter();
-    const userId = "clvictuww0001o83h8g7l3ddt";
-    const cartId = 10;
+    const userId = session?.user.id;
+    const cartId = Number(getCart(userId));
     const [items, setItems] = useState<{ id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
 
     useEffect(() => {
@@ -43,7 +45,7 @@ export default function CartList() {
         };
 
         fetchCartItems();
-    }, []);
+    }, [userId]);
 
     const handleQuantityChange = async (index: number, newQuantity: number) => {
         const updatedItems = [...items];

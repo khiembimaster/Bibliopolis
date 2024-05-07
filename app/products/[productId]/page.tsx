@@ -3,15 +3,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { ToastAction } from "@/components/ui/toast"
-import { EmojiStyle } from 'emoji-picker-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { PiMinus, PiPlus } from 'react-icons/pi';
 import { Input } from '@/components/ui/input';
 import { GetByBookDetail, addToCart, createCart, updateItemCart } from '@/app/action';
 import { useParams  } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
 
 export default function ProductDetailPage() {
+    const {data: session, status} = useSession()
     const router = useParams();
     let productId : string = router.productId as unknown as string
 
@@ -31,15 +33,20 @@ export default function ProductDetailPage() {
     if (!product) {
         return <div>Loading...</div>;
     }
-    const handle = async () => {
-        const Quantity = document.getElementById('productQuantity') as HTMLInputElement;
-        const price = Number(Quantity.value)  * product.price; 
-        //const creatCart = await createCart("clvictuww0001o83h8g7l3ddt",price,parseInt(productId),Number(Quantity.value) );
-        // const add = await addToCart(parseInt(productId), creatCart.id, Number(Quantity.value) )
-        const updateCart = await updateItemCart("clvictuww0001o83h8g7l3ddt",price,10,parseInt(productId),Number(Quantity.value));
-        toast({
-            title:  "✅ Product added to cart",
-          })
+    const handle = async () => {  
+        console.log(session?.user)
+        if (status === "authenticated")
+        {
+            const Quantity = document.getElementById('productQuantity') as HTMLInputElement;
+            const price = Number(Quantity.value)  * product.price; 
+            //const creatCart = await createCart("clvictuww0001o83h8g7l3ddt",price,parseInt(productId),Number(Quantity.value) );
+            // const add = await addToCart(parseInt(productId), creatCart.id, Number(Quantity.value) )
+            const updateCart = await updateItemCart(session.user.id,price,10,parseInt(productId),Number(Quantity.value));
+            toast({
+                title:  "✅ Product added to cart",
+            })
+        }  
+        
     }
     return (
         <div className='container my-6'>

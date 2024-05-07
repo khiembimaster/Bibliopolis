@@ -59,13 +59,12 @@ export const POST = async (request: any) => {
     }
 }
 
-  console.log("2222 ", stripeItems)
   const session = await stripe.checkout.sessions.create({
     line_items: stripeItems, // This is where stripeItems should be assigned
     mode: "payment",
     success_url: `http://localhost:3000/order/${newOrder.id}`,
     cancel_url: "http://localhost:3000/cancel",
 });
-
+  console.log("111", session)
   return NextResponse.json({ url: session.url });
 };
