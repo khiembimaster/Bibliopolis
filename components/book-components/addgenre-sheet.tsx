@@ -22,7 +22,7 @@ import { Textarea } from '../ui/textarea'
 const AddgenreSheet = () => {
     return <main>
         <Sheet>
-            <SheetTrigger className='border p-2 bg-black text-white rounded-full'>
+            <SheetTrigger className='border p-2 bg-black text-white rounded-full hover:bg-white hover:text-black '>
                 Add a genre
             </SheetTrigger>
             <SheetContent>

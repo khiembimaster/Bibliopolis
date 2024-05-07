@@ -23,7 +23,7 @@ interface MyComponentProps {
 const EditBook :React.FC<MyComponentProps> = ( {book} ) => {
     return <main>
         <Popover>
-            <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >description</PopoverTrigger>
+            <PopoverTrigger className="bg-black hover:bg-blue-700 text-white px-2 rounded" >description</PopoverTrigger>
             <PopoverContent>
                 <Card>
                     <CardContent>

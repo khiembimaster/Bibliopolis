@@ -18,9 +18,11 @@ const Book = async () => {
   console.log("books")
 
   return <div className="grid col-span-3" >
-    <p>Welcome to book management page</p>
-    <AddbookSheet></AddbookSheet>
-    <AddgenreSheet></AddgenreSheet>
+    <p className="text-4xl font-bold text-white-800">Books management</p>
+    <div className='flex'>
+    <div className="my-2 mx-2"> <AddbookSheet ></AddbookSheet> </div>
+    <div className='my-2 mx-2'>  <AddgenreSheet></AddgenreSheet></div>
+    </div>
     <DataTable columns={columns} data={books} ></DataTable>
   </div>
 

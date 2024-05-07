@@ -144,7 +144,9 @@ export const columns: ColumnDef<BookFull>[] = [
     cell: ({ row }) => {
       const book = row.original;
       //const genres = book.genres;
-      return <div id={"description" + String(book.id)}>  <EditBook book={book}/></div>
+      return <div  id={"description" + String(book.id)}> 
+       <EditBook book={book}/>
+       </div>
     },
 
   },
@@ -158,7 +160,7 @@ export const columns: ColumnDef<BookFull>[] = [
       return <div>
 
         <UpdateButton id={book.id} book={book} />
-        <Button className="bg-red-500 hover:bg-red-600" onClick={() => {
+        <Button className="h-5 w-5 m-1" onClick={() => {
           DeleteBook(book.id);
           window.location.reload();
 
