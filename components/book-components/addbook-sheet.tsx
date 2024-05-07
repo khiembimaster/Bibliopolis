@@ -28,7 +28,7 @@ import { GenreItem } from './genre-item'
 import { Genre } from '@prisma/client'
 import React, { useEffect, useState } from 'react';
 import { AddbookButton } from './addbook-button'
-
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 const AddbookSheet = async () => {
@@ -44,28 +44,30 @@ const AddbookSheet = async () => {
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>Fill all information about new book</SheetTitle>
+                  
                     <SheetDescription>
+                    <ScrollArea className="h-[600px] w-full">
                         <Card>
                             <CardContent>
-                                <CardTitle>Title</CardTitle>
+                                <CardTitle className="text-base">Title</CardTitle>
                                 <CardDescription>
                                     <Input id='title' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Author</CardTitle>
+                                <CardTitle className="text-base">Author</CardTitle>
                                 <CardDescription>
                                     <Input id='author' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Price</CardTitle>
+                                <CardTitle className="text-base">Price</CardTitle>
                                 <CardDescription>
                                     <Input id='price' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-
+                            <CardTitle className="text-base">Genre</CardTitle>
                                 <div className="combobox">
                                     <select id="genreCombobox">
                                    
@@ -84,25 +86,25 @@ const AddbookSheet = async () => {
 
                             <CardContent>
 
-                                <CardTitle>Publication-year</CardTitle>
+                                <CardTitle className="text-base">Publication-year</CardTitle>
                                 <CardDescription>
                                     <Input id='date' type="date" />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Stock-quantity</CardTitle>
+                                <CardTitle className="text-base">Stock-quantity</CardTitle>
                                 <CardDescription>
                                     <Input id='quantity' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Publisher</CardTitle>
+                                <CardTitle className="text-base">Publisher</CardTitle>
                                 <CardDescription>
                                     <Input id='publisher' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Cover-image</CardTitle>
+                                <CardTitle className="text-base">Cover-image</CardTitle>
                                 <CardDescription>
                                     <input id='image' type='file' />
                                 </CardDescription>
@@ -113,7 +115,9 @@ const AddbookSheet = async () => {
                                 <AddbookButton></AddbookButton>
                             </CardContent>
                         </Card>
+                        </ScrollArea>
                     </SheetDescription>
+                
                 </SheetHeader>
             </SheetContent>
         </Sheet>

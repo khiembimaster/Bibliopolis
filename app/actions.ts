@@ -114,5 +114,13 @@ const RemoveGenre = async function removeGenre(idBook: number, idGenre: number) 
     })
 }
 
-export {CreateBook, GetAllBook, UpdateBook, CreateGenre, GetAllGenre, AddBookToGenre, RemoveGenre}
+const DeleteBook = async function deleteBook(idBook: number)
+{const deleteBook= await prisma.book.deleteMany({
+    where: {
+      id: idBook
+    },
+  })}
+
+
+export {CreateBook, GetAllBook, UpdateBook, CreateGenre, GetAllGenre, AddBookToGenre, RemoveGenre, DeleteBook}
 

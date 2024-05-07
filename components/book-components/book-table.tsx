@@ -48,16 +48,29 @@ function formatDate(inputDate: string): string {
 
 interface MyComponentProps{
   
-    books: BookFull[]
-    genres: GenreFull[]
+   
 }
 
 
 
-const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
+const BookTable: React.FC<MyComponentProps> = ()=> {
+    const [books, setBooks] = useState<BookFull[]>([]);
 
-   
-   const [Books, setBooks] = useState(books);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const bookData = await GetAllBook(); // Assuming serverAction is a promise-based function that fetches genres data
+                setBooks(bookData);
+            } catch (error) {
+                // Handle error
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    
+  
     return (
         <Table>
             <TableCaption>A list of books.</TableCaption>
@@ -70,75 +83,57 @@ const BookTable: React.FC<MyComponentProps> = ({books,genres})=> {
                     <TableHead>Isbn</TableHead>
                     <TableHead>Price</TableHead>
                     <TableHead>Publisher</TableHead>
+
                     <TableHead>Publication year</TableHead>
                     <TableHead>Stock quantity</TableHead>
                     <TableHead>Rating</TableHead>
                     <TableHead>Description</TableHead>
-
+                
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {Books.map((book) => (
-                  
+                {books.map((book) => (
                     <TableRow key={book.id}>
-                        <TableCell id={"id" + String(book.id)} className="font-medium">{book.id}</TableCell>
+                        <TableCell id={"id"+String(book.id)} className="font-medium">{book.id}</TableCell>
                         <TableCell>
-                            <Input id={"inputTitle" + String(book.id)} defaultValue={book.title} />
-                        </TableCell>
-                        <TableCell> 
-                            <Input id={"inputAuthor" + String(book.id)} defaultValue={book.author} />
+                            <Input id={"inputTitle"+String(book.id)} defaultValue={book.title} />
                         </TableCell>
                         <TableCell>
-                           <GenreList book={book}></GenreList>
-                         <AddGenreButton book={book} genres={genres} />
+                            <Input id={"inputAuthor"+String(book.id)} defaultValue={book.author} />
                         </TableCell>
-
-                        <TableCell> <Input id={"inputIsbn" + String(book.id)} defaultValue={book.isbn} /></TableCell>
-                        <TableCell> <Input id={"inputPrice" + String(book.id)} defaultValue={book.price.toString()} /></TableCell>
-                        <TableCell> <Input id={"inputPublisher" + String(book.id)} defaultValue={book.publisher} /> </TableCell>
-                        <TableCell><Input id={"inputDate" + String(book.id)} type="date" defaultValue={formatDate(book.publication_year.toLocaleDateString())} />
-
+                        <TableCell>
+                            <ul>
+                           {book.genres.map((genre) =>(
+                           <li key={genre.id}>{genre.name}</li> 
+                           ))} 
+                           </ul>
+                           <AddGenreButton book={book}/>
                         </TableCell>
+                        
+                        <TableCell> <Input id={"inputIsbn"+String(book.id)} defaultValue= {book.isbn}/></TableCell>
+                        <TableCell> <Input id={"inputPrice"+String(book.id)} defaultValue= {book.price.toString()}/></TableCell>
+                        <TableCell><Input id={"inputPublisher"+String(book.id)} defaultValue= {book.publisher}/></TableCell>
+                        <TableCell><Input  id={"inputDate"+String(book.id)} type="date" defaultValue= {formatDate(book.publication_year.toLocaleDateString())}/>
+                            
+                        </TableCell>    
                         <TableCell >
-                            <Input id={"inputQuantity" + String(book.id)} className="w-full" defaultValue={String(book.stock_quantity)} />
-
-                        </TableCell>
-                        <TableCell id={"bookRating" + String(book.id)}>{String(book.rating)}</TableCell>
-
-                        <TableCell><EditBook book={book} /></TableCell>
+                        <Input  id={"inputQuantity"+String(book.id)} className="w-full" defaultValue= {String(book.stock_quantity)}/>
+                            
+                            </TableCell>
+                        <TableCell id={"bookRating"+String(book.id)}>{String(book.rating)}</TableCell>
+                   
+                        <TableCell><EditBook book={book}/></TableCell>
 
                         <TableCell>
-                            <UpdateButton id={book.id} book={book} />
-                            <Button onClick={()=>{
-                                let b = Object.assign({},Books);
-                                b = Books.filter (item => item!= book);
-                                setBooks(Books => b);
-                            }} className="bg-red-500 hover:bg-red-600">✗</Button>
+                                <UpdateButton id={book.id} book={book}/>
+                                <Button className="bg-red-500 hover:bg-red-600" >✗</Button>
                         </TableCell>
-
+                     
                     </TableRow>
                 ))}
             </TableBody>
-            <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+
         </Table>
-        
     )
 }
 

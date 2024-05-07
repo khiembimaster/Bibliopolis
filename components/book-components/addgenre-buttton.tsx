@@ -40,7 +40,7 @@ const AddGenreButton: React.FC<MyComponentProps> = ({ book }) => {
         fetchData();
     }, []);
 
-    ;
+    
     // const genres = GetAllGenre()
 
     return <Popover>
