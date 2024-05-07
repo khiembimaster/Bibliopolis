@@ -9,6 +9,8 @@ interface Props {
 
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { Home, LibraryBig, Package2, Settings, ShoppingCart, UserRound } from 'lucide-react';
+import { auth } from '@/auth';
+import { Role } from '@prisma/client';
 
 const top_sections = [
   { tooltip_content: 'Dashboard', href: '/dashboard', icon: <Home className="h-5 w-5" />},
@@ -21,7 +23,11 @@ const bottom_section = [
   { tooltip_content: 'Settings', href: '/dashboard/setting', icon: <Settings className="h-5 w-5" />},
 ]
 
-const DashboardLayout = ({children}: Props) => {
+const DashboardLayout = async ({children}: Props) => {
+  const session = await auth()
+  if (session?.user.role ===  Role.USER) 
+    return <div>You are not permitted to view this page! Please choose another account.</div>
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">

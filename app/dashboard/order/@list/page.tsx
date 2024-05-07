@@ -32,10 +32,11 @@ const getOrders = async (deltaTime: Date)=>{
 
 const OrderTable = async () => {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const monday = new Date(today.setDate(today.getDate() - (today.getDay() || 7) + 1));
   const this_week_orders = await getOrders(monday);
 
-  const startOfThisMonth = new Date(today.setDate(0));
+  const startOfThisMonth = new Date(today.setDate(1));
   const this_month_orders = await getOrders(startOfThisMonth);
 
   const startOfThisYear = new Date(today.setMonth(0, 0));

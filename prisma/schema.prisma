@@ -194,6 +194,8 @@ enum Role {
 }
 
 enum OrderStatus {
+  UNAPPROVED
+  APPROVED
   UNPAID
   READY_TO_SHIP
   PROCESSED
