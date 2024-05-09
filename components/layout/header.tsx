@@ -2,6 +2,7 @@ import Link from "next/link";
 import HeaderDropdownMenu from "./header-dropdown-menu";
 import HeaderShoppingCart from "./header-shopping-cart";
 import SignIn_SignOut from "./header-login-logout";
+import Headerstatusorder from "./header-status-order";
 
 export default function Header({ session }: { session: any }) {
   return (
@@ -16,8 +17,7 @@ export default function Header({ session }: { session: any }) {
           <Link href={"/about"}>About</Link>
         </div>
         <div className={"flex items-center gap-5"}>
-          <HeaderDropdownMenu />
-          <HeaderShoppingCart />
+          {/* <HeaderDropdownMenu /> */}
           <SignIn_SignOut session={session} />
         </div>
       </div>

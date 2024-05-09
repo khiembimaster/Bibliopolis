@@ -21,32 +21,32 @@ const maxPriceBook = async () => {
         }
     });
     console.log(maxPrice?.price)
-    return Number(maxPrice?.price); 
+    return Number(maxPrice?.price);
 }
 const searchBooksByName = async (name: string, genreId: number, priceStart: number, priceFinish: number, currentPage: number, pageSize: number) => {
-    console.log("1112 " + priceStart )
+    console.log("1112 " + priceStart)
     const books = await prisma.book.findMany({
         where: {
             AND: [
                 {
                     title: {
-                        contains: name 
+                        contains: name
                     }
                 },
                 {
                     price: {
-                        gte: priceStart, 
-                        lte: priceFinish 
+                        gte: priceStart,
+                        lte: priceFinish
                     }
                 },
                 {
-                    genres : {
+                    genres: {
                         some: {
                             id: genreId
                         }
                     }
                 }
-                
+
             ]
         },
         skip: (currentPage - 1) * pageSize,
@@ -57,13 +57,13 @@ const searchBooksByName = async (name: string, genreId: number, priceStart: numb
             AND: [
                 {
                     title: {
-                        contains: name 
+                        contains: name
                     }
                 },
                 {
                     price: {
-                        gte: priceStart, 
-                        lte: priceFinish 
+                        gte: priceStart,
+                        lte: priceFinish
                     }
                 }
             ]
@@ -223,17 +223,17 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
             total_price: total_price,
             books: {
                 update: {
-                    where: { 
-                        bookId_cartId: { 
-                            bookId: bookId, 
-                            cartId: Number(existingCart?.id) 
-                        } 
+                    where: {
+                        bookId_cartId: {
+                            bookId: bookId,
+                            cartId: Number(existingCart?.id)
+                        }
                     },
                     data: {
                         quantity: newQuantity
                     }
                 }
-            }        
+            }
         }
     });
 
@@ -254,7 +254,7 @@ const deleteCartItem = async (userId: string, cartId: number, bookId: number, to
         data: {
             total_price: total_price,
             books: {
-                deleteMany: [{ bookId: bookId, cartId:  Number(existingCart?.id) }],
+                deleteMany: [{ bookId: bookId, cartId: Number(existingCart?.id) }],
             }
         }
     });
@@ -282,10 +282,10 @@ const getBooksInCart = async (userId: string) => {
             id: book.bookId,
             book: {
                 id: bookDetail?.id || 0,
-                image: bookDetail?.cover_image || '', // Provide a fallback value if image is undefined
-                name: bookDetail?.title || '', // Provide a fallback value if name is undefined
+                image: bookDetail?.cover_image || '',
+                name: bookDetail?.title || '',
                 price: Number(bookDetail?.price) || 0,
-                quantity: bookDetail?.stock_quantity || 0 // Provide a fallback value if price is undefined
+                quantity: bookDetail?.stock_quantity || 0
             },
             quantity: book.quantity
         };
@@ -312,9 +312,9 @@ const createOrder = async (userId: string, cartId: number, shippingAddress: stri
                 books: {
                     createMany: {
                         data: cartList.map(item => ({
-                            bookId: item.book.id, 
+                            bookId: item.book.id,
                             quantity: item.quantity
-                           
+
                         }))
                     }
                 }
@@ -324,7 +324,7 @@ const createOrder = async (userId: string, cartId: number, shippingAddress: stri
             }
         });
         await Promise.all(cartList.map(async item => {
-            await deleteCartItem(userId,  Number(existingCart?.id), item.book.id, 0);
+            await deleteCartItem(userId, Number(existingCart?.id), item.book.id, 0);
         }));
         return newOrder;
     } catch (error) {
@@ -343,5 +343,85 @@ const findAllGenre = async () => {
         throw new Error("Failed to find all genres");
     }
 }
-export { GetAllBook, GetByBookDetail, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
-     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder,findAllGenre, getCart }
+const findAllOrder = async (userId: string) => {
+    const listOrder = await prisma.order.findMany({
+        where: {
+            userId: userId,
+        }
+    });
+    console.log(listOrder)
+    return listOrder;
+};
+const getBookOrder = async (orderId: string) => {
+    try {
+        const order = await prisma.order.findFirst({
+            where: {
+                id: orderId,
+            },
+            include: {
+                books: {
+                    include: {
+                        book: true,
+                    },
+                },
+            },
+        });
+        if (!order) {
+            throw new Error(`Order with ID ${orderId} not found.`);
+        }
+
+        const transformedItems = await Promise.all(order.books.map(async (item) => {
+            const bookDetail = await GetByBookDetail(item.bookId);
+            return {
+                id: item.book.id,
+                book: {
+                    id: bookDetail?.id || 0,
+                    image: bookDetail?.cover_image || '',
+                    name: bookDetail?.title || '',
+                    price: Number(bookDetail?.price) || 0,
+                    quantity: bookDetail?.stock_quantity || 0
+                },
+                quantity: item.quantity || 0,
+            };
+        }));
+
+        return transformedItems;
+    } catch (error) {
+        throw new Error("Failed to fetch books in order detail.");
+    }
+};
+const getOrder = async (orderId: string) => {
+    const order = await prisma.order.findFirst(
+        {
+            where: {
+                id: orderId
+            }
+        }
+        
+    )
+    return order
+}
+const getGenresOfBook = async (bookId: number) => {
+    try {
+        const book = await prisma.book.findUnique({
+            where: {
+                id: bookId
+            },
+            include: {
+                genres: true
+            }
+        });
+
+        if (!book) {
+            throw new Error(`Book with ID ${bookId} not found.`);
+        }
+
+        return book.genres;
+    } catch (error) {
+        throw new Error(`Failed to fetch genres of book: `);
+    }
+};
+export {
+    GetAllBook,getGenresOfBook, getOrder, GetByBookDetail, findAllOrder, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
+    updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder, findAllGenre, getCart, getBookOrder
+};

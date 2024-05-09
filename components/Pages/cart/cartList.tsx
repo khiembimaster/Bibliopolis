@@ -33,7 +33,7 @@ export default function CartList() {
     const userId = session?.user.id;
     const cartId = Number(getCart(userId));
     const [items, setItems] = useState<{ id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
-
+    const [showDialog, setShowDialog] = useState(false);
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
@@ -84,37 +84,53 @@ export default function CartList() {
             console.error("Failed to create order:", error);
         }
     };
+    const handlePayment = async () => {
+        const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0);
+        if(totalBill === 0) {
+            return;
+        } else {
+            setShowDialog(true); 
+        }
+    };
     const checkout = async () => {
+        
         const shippingAddress = document.getElementById('address') as HTMLInputElement;
         console.log(shippingAddress.value)
         const totalBill = items.reduce((total, item) => total + (item.quantity * item.book.price), 0);
-        try {
-            const response = await fetch("http://localhost:3000/api/checkout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    products: items,
-                    userId,
-                    cartId,
-                    shippingAddress: shippingAddress.value,
-                    totalBill: totalBill
-                }),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        if(totalBill === 0)
+            {
+                return
             }
-    
-            const responseData = await response.json();
-            console.log(responseData);
-            if (responseData.url) {
-                window.location.href = responseData.url;
+        else{
+            try {
+                const response = await fetch("http://localhost:3000/api/checkout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        products: items,
+                        userId,
+                        cartId,
+                        shippingAddress: shippingAddress.value,
+                        totalBill: totalBill
+                    }),
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+        
+                const responseData = await response.json();
+                console.log(responseData);
+                if (responseData.url) {
+                    window.location.href = responseData.url;
+                }
+            } catch (error) {
+                console.error("Error during checkout:", error);
             }
-        } catch (error) {
-            console.error("Error during checkout:", error);
         }
+        
     };
     
     return (
@@ -165,9 +181,9 @@ export default function CartList() {
             <div>
                 <div className='flex flex-col gap-3 my-5 w-full items-center'>
                     <p>Total bill: ${items.reduce((total, item) => total + (item.quantity * item.book.price), 0)}</p>
-                    <Dialog>
+                    <Dialog open={showDialog}  >
                         <DialogTrigger asChild>
-                            <Button size={'lg'}>Payment</Button>
+                            <Button size={'lg'} onClick={handlePayment}>Payment</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
@@ -178,12 +194,31 @@ export default function CartList() {
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="name" className="text-right">
+                                        Full name
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        className="col-span-3"
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4 mt-5">
                                     <Label htmlFor="address" className="text-right">
                                         Address
                                     </Label>
                                     <Input
                                         id="address"
-                                        defaultValue="Pedro Duarte"
+                                        className="col-span-3"
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4 mt-5">
+                                    <Label htmlFor="phone" className="text-right">
+                                        Phone
+                                    </Label>
+                                    <Input
+                                        id="phone"
                                         className="col-span-3"
                                         required
                                     />

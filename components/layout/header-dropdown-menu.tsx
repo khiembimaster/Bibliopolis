@@ -18,10 +18,8 @@ export default function HeaderDropdownMenu() {
                 </DropdownMenuTrigger>
                 
                 <DropdownMenuContent>
-                    <DropdownMenuLabel>All Product</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Billing</DropdownMenuItem>
+                    <DropdownMenuItem>Home page</DropdownMenuItem>
+                    <DropdownMenuItem>Product</DropdownMenuItem>
                     <DropdownMenuItem>Team</DropdownMenuItem>
                     <DropdownMenuItem>Subscription</DropdownMenuItem>
                 </DropdownMenuContent>
