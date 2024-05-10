@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 
 export default function Homepage() {
   return (
-    <div className="grid grid-rows-3">
+    <div className="grid">
       <div className="min-h-screen bg-[url('/image/image.png')] bg-center bg-cover">
         <div className="text-white mt-40 ms-10">
           <h1 className="text-6xl font-semibold leading-normal">Welcome</h1>
