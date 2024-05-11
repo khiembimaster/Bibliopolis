@@ -1,18 +1,14 @@
 import "server-only"
 
 import { unstable_noStore as noStore } from "next/cache"
-import { db } from "@/db"
-import { tasks, type Task } from "@/db/schema"
-import type { DrizzleWhere } from "@/types"
-import { and, asc, count, desc, gte, lte, or } from "drizzle-orm"
 
-import { filterColumn } from "@/lib/filter-column"
+import { type GetOrdersSchema } from "./validations"
+import { Order } from "@/types/index"
+import prisma from "@/client"
 
-import { type GetTasksSchema } from "./validations"
-
-export async function getTasks(input: GetTasksSchema) {
+export async function getOrders(input: GetOrdersSchema) {
   noStore()
-  const { page, per_page, sort, title, status, priority, operator, from, to } =
+  const { page, per_page, sort, status, min, max, from, to} =
     input
 
   try {
@@ -22,105 +18,71 @@ export async function getTasks(input: GetTasksSchema) {
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
     const [column, order] = (sort?.split(".").filter(Boolean) ?? [
-      "createdAt",
+      "order_date",
       "desc",
-    ]) as [keyof Task | undefined, "asc" | "desc" | undefined]
-
+    ]) as [keyof Order | undefined, "asc" | "desc" | undefined]
+  
     // Convert the date strings to Date objects
     const fromDay = from ? new Date(from) : undefined
     const toDay = to ? new Date(to) : undefined
 
-    const where: DrizzleWhere<Task> =
-      !operator || operator === "and"
-        ? and(
-            // Filter tasks by title
-            title
-              ? filterColumn({
-                  column: tasks.title,
-                  value: title,
-                })
-              : undefined,
-            // Filter tasks by status
-            !!status
-              ? filterColumn({
-                  column: tasks.status,
-                  value: status,
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter tasks by priority
-            !!priority
-              ? filterColumn({
-                  column: tasks.priority,
-                  value: priority,
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter by createdAt
-            fromDay && toDay
-              ? and(gte(tasks.createdAt, fromDay), lte(tasks.createdAt, toDay))
-              : undefined
-          )
-        : or(
-            // Filter tasks by title
-            title
-              ? filterColumn({
-                  column: tasks.title,
-                  value: title,
-                })
-              : undefined,
-            // Filter tasks by status
-            !!status
-              ? filterColumn({
-                  column: tasks.status,
-                  value: status,
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter tasks by priority
-            !!priority
-              ? filterColumn({
-                  column: tasks.priority,
-                  value: priority,
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter by createdAt
-            fromDay && toDay
-              ? and(gte(tasks.createdAt, fromDay), lte(tasks.createdAt, toDay))
-              : undefined
-          )
-
     // Transaction is used to ensure both queries are executed in a single transaction
-    const { data, total } = await db.transaction(async (tx) => {
-      const data = await tx
-        .select()
-        .from(tasks)
-        .limit(per_page)
-        .offset(offset)
-        .where(where)
-        .orderBy(
-          column && column in tasks
-            ? order === "asc"
-              ? asc(tasks[column])
-              : desc(tasks[column])
-            : desc(tasks.id)
-        )
+    const [data, total] = await prisma.$transaction([
+      prisma.order.findMany({
+        where:{
+          status: status ,
+          total_price: {
+            gte: min,
+            lte: max
+          },
+          order_date: {
+            gte: fromDay,
+            lte: toDay,
+          },
+        },
+        select:{
+          id:true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          shippingInfo: {
+            select: {
+              addressLine1: true,
+              addressLine2: true,
+              city: true,
+              state: true,
+              deliveryMethod: true,
+              trackingNumber: true
+            }
+          },
+          status: true,
+          order_date: true,
+          total_price: true
+        },
+        orderBy:{
+          [column as string]: order,
+        },
+        skip: offset,
+        take: per_page
+      }),
+      prisma.order.count({
+        where:{
+          status: status ,
+          total_price: {
+            gte: min,
+            lte: max
+          },
+          order_date: {
+            gte: fromDay,
+            lte: toDay,
+          },
+        },
+      })
+    ])
 
-      const total = await tx
-        .select({
-          count: count(),
-        })
-        .from(tasks)
-        .where(where)
-        .execute()
-        .then((res) => res[0]?.count ?? 0)
-
-      return {
-        data,
-        total,
-      }
-    })
 
     const pageCount = Math.ceil(total / per_page)
     return { data, pageCount }
@@ -129,33 +91,20 @@ export async function getTasks(input: GetTasksSchema) {
   }
 }
 
-export async function getTaskCountByStatus() {
+export async function getOrderCountByStatus() {
   noStore()
   try {
-    return await db
-      .select({
-        status: tasks.status,
-        count: count(),
-      })
-      .from(tasks)
-      .groupBy(tasks.status)
-      .execute()
-  } catch (err) {
-    return []
-  }
-}
-
-export async function getTaskCountByPriority() {
-  noStore()
-  try {
-    return await db
-      .select({
-        priority: tasks.priority,
-        count: count(),
-      })
-      .from(tasks)
-      .groupBy(tasks.priority)
-      .execute()
+    return await prisma.order.groupBy({
+      by: ['status'],
+      _count: {
+        status: true
+      },
+      orderBy: {
+        _count: {
+          status: 'desc',
+        },
+      },
+    })
   } catch (err) {
     return []
   }

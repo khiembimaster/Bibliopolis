@@ -29,8 +29,10 @@ import { updateOrder } from "../_lib/actions"
 import { getStatusIcon } from "../_lib/utils"
 import { DeleteOrdersDialog } from "./delete-orders-dialog"
 import { UpdateOrderSheet } from "./update-order-sheet"
+import { Order, User } from "@/types/index"
+import { OrderStatus } from "@prisma/client"
 
-export function getColumns(): ColumnDef<Task>[] {
+export function getColumns(): ColumnDef<Order>[] {
   return [
     {
       id: "select",
@@ -57,30 +59,28 @@ export function getColumns(): ColumnDef<Task>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "code",
+      accessorKey: "",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Task" />
+        <DataTableColumnHeader column={column} title="ID" />
       ),
       cell: ({ row }) => <div className="w-20">{row.getValue("code")}</div>,
       enableSorting: false,
       enableHiding: false,
     },
     {
-      accessorKey: "title",
+      accessorKey: "user",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title="Customer" />
       ),
       cell: ({ row }) => {
-        const label = tasks.label.enumValues.find(
-          (label) => label === row.original.label
-        )
+        const user = row.getValue("user") as User
 
         return (
           <div className="flex space-x-2">
-            {label && <Badge variant="outline">{label}</Badge>}
-            <span className="max-w-[31.25rem] truncate font-medium">
-              {row.getValue("title")}
-            </span>
+            <div className="font-medium">{user.name}</div>
+            <div className="hidden text-sm text-muted-foreground md:inline">
+              {user.email}
+            </div>
           </div>
         )
       },
@@ -91,7 +91,7 @@ export function getColumns(): ColumnDef<Task>[] {
         <DataTableColumnHeader column={column} title="Status" />
       ),
       cell: ({ row }) => {
-        const status = tasks.status.enumValues.find(
+        const status = Object.keys(OrderStatus).find(
           (status) => status === row.original.status
         )
 
@@ -114,35 +114,7 @@ export function getColumns(): ColumnDef<Task>[] {
       },
     },
     {
-      accessorKey: "priority",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Priority" />
-      ),
-      cell: ({ row }) => {
-        const priority = tasks.priority.enumValues.find(
-          (priority) => priority === row.original.priority
-        )
-
-        if (!priority) return null
-
-        const Icon = getPriorityIcon(priority)
-
-        return (
-          <div className="flex items-center">
-            <Icon
-              className="mr-2 size-4 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span className="capitalize">{priority}</span>
-          </div>
-        )
-      },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id))
-      },
-    },
-    {
-      accessorKey: "createdAt",
+      accessorKey: "order_date",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
@@ -152,22 +124,22 @@ export function getColumns(): ColumnDef<Task>[] {
       id: "actions",
       cell: function Cell({ row }) {
         const [isUpdatePending, startUpdateTransition] = React.useTransition()
-        const [showUpdateTaskSheet, setShowUpdateTaskSheet] =
+        const [showUpdateOrderSheet, setShowUpdateOrderSheet] =
           React.useState(false)
-        const [showDeleteTaskDialog, setShowDeleteTaskDialog] =
+        const [showDeleteOrderDialog, setShowDeleteOrderDialog] =
           React.useState(false)
 
         return (
           <>
-            <UpdateTaskSheet
-              open={showUpdateTaskSheet}
-              onOpenChange={setShowUpdateTaskSheet}
-              task={row.original}
+            <UpdateOrderSheet
+              open={showUpdateOrderSheet}
+              onOpenChange={setShowUpdateOrderSheet}
+              order={row.original}
             />
-            <DeleteTasksDialog
-              open={showDeleteTaskDialog}
-              onOpenChange={setShowDeleteTaskDialog}
-              tasks={[row.original]}
+            <DeleteOrdersDialog
+              open={showDeleteOrderDialog}
+              onOpenChange={setShowDeleteOrderDialog}
+              orders={[row.original]}
               showTrigger={false}
               onSuccess={() => row.toggleSelected(false)}
             />
@@ -182,10 +154,10 @@ export function getColumns(): ColumnDef<Task>[] {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onSelect={() => setShowUpdateTaskSheet(true)}>
+                <DropdownMenuItem onSelect={() => setShowUpdateOrderSheet(true)}>
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuSub>
+                {/* <DropdownMenuSub>
                   <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     <DropdownMenuRadioGroup
@@ -218,10 +190,10 @@ export function getColumns(): ColumnDef<Task>[] {
                       ))}
                     </DropdownMenuRadioGroup>
                   </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                </DropdownMenuSub> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setShowDeleteTaskDialog(true)}
+                  onSelect={() => setShowDeleteOrderDialog(true)}
                 >
                   Delete
                   <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>

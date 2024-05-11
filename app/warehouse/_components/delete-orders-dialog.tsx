@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { deleteOrders } from "../_lib/actions"
-import { Order } from "@prisma/client"
+import { Order } from "@/types/index"
 
 interface DeleteOrdersDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {

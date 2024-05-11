@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import type { DataTableFilterField } from "@/types"
+import type { DataTableFilterField } from "@/types/index"
 import {
   getCoreRowModel,
   getFacetedRowModel,

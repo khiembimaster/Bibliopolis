@@ -1,39 +1,39 @@
 "use client"
 
-import { type Task } from "@/db/schema"
 import { DownloadIcon } from "@radix-ui/react-icons"
 import { type Table } from "@tanstack/react-table"
 
 import { exportTableToCSV } from "@/lib/export"
 import { Button } from "@/components/ui/button"
 
-import { CreateTaskDialog } from "./create-order-dialog"
-import { DeleteTasksDialog } from "./delete-orders-dialog"
+// import { CreateOrderDialog } from "./create-order-dialog"
+import { DeleteOrdersDialog } from "./delete-orders-dialog"
+import { Order } from "@/types/index"
 
-interface TasksTableToolbarActionsProps {
-  table: Table<Task>
+interface OrdersTableToolbarActionsProps {
+  table: Table<Order>
 }
 
-export function TasksTableToolbarActions({
+export function OrdersTableToolbarActions({
   table,
-}: TasksTableToolbarActionsProps) {
+}: OrdersTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
-        <DeleteTasksDialog
-          tasks={table
+        <DeleteOrdersDialog
+          orders={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null}
-      <CreateTaskDialog prevTasks={table.getFilteredRowModel().rows} />
+      {/* <CreateTaskDialog prevTasks={table.getFilteredRowModel().rows} /> */}
       <Button
         variant="outline"
         size="sm"
         onClick={() =>
           exportTableToCSV(table, {
-            filename: "tasks",
+            filename: "orders",
             excludeColumns: ["select", "actions"],
           })
         }

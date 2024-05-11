@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-// import { Orders, type Task } from "@/db/schema"
-import { Order, OrderStatus } from "@prisma/client"
-import type { DataTableFilterField } from "@/types/index"
+import { OrderStatus } from "@prisma/client"
+import type { DataTableFilterField, Order } from "@/types/index"
 
 import { useDataTable } from "@/hooks/use-data-table"
 import { DataTableAdvancedToolbar } from "@/components/data-table/advanced/data-table-advanced-toolbar"
@@ -15,7 +14,6 @@ import { getStatusIcon } from "../_lib/utils"
 import { getColumns } from "./orders-table-columns"
 import { OrdersTableFloatingBar } from "./orders-table-floating-bar"
 import { OrdersTableToolbarActions } from "./orders-table-toolbar-actions"
-import prisma from "@/client"
 
 interface OrdersTableProps {
   ordersPromise: ReturnType<typeof getOrders>
@@ -65,7 +63,7 @@ export function OrdersTable({ ordersPromise }: OrdersTableProps) {
     filterFields,
     enableAdvancedFilter: true,
     defaultPerPage: 10,
-    defaultSort: "createdAt.desc",
+    defaultSort: "order_date.desc",
   })
 
   return (

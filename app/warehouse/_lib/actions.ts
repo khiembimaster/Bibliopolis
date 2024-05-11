@@ -1,48 +1,46 @@
 "use server"
 
 import { unstable_noStore as noStore, revalidatePath } from "next/cache"
-import { customAlphabet } from "nanoid"
 
 import { getErrorMessage } from "@/lib/handle-error"
 
-import type { CreateOrderSchema, UpdateOrderSchema } from "./validations"
+import type { UpdateOrderSchema } from "./validations"
 import { OrderStatus } from "@prisma/client"
+import prisma from "@/client"
 
-export async function createOrder(
-  input: CreateOrderSchema
-) {
-  noStore()
-  try {
-    await Promise.all([
+// export async function createOrder(
+//   input: CreateOrderSchema
+// ) {
+//   noStore()
+//   try {
+//     await Promise.all([
       
-    ])
+//     ])
 
-    revalidatePath("/")
+//     revalidatePath("/")
 
-    return {
-      data: null,
-      error: null,
-    }
-  } catch (err) {
-    return {
-      data: null,
-      error: getErrorMessage(err),
-    }
-  }
-}
+//     return {
+//       data: null,
+//       error: null,
+//     }
+//   } catch (err) {
+//     return {
+//       data: null,
+//       error: getErrorMessage(err),
+//     }
+//   }
+// }
 
 export async function updateOrder(input: UpdateOrderSchema & { id: string }) {
   noStore()
   try {
-    // await db
-    //   .update(Orders)
-    //   .set({
-    //     title: input.title,
-    //     label: input.label,
-    //     status: input.status,
-    //     priority: input.priority,
-    //   })
-    //   .where(eq(Orders.id, input.id))
+    await prisma.order.update({
+      where: {id: input.id},
+      data: {
+        status: input.status,
+        order_date: input.order_date
+      }
+    })
 
     revalidatePath("/")
 
@@ -60,19 +58,22 @@ export async function updateOrder(input: UpdateOrderSchema & { id: string }) {
 
 export async function updateOrders(input: {
   ids: string[]
-  label?: string
   status?: OrderStatus
+  order_date?: Date
 }) {
   noStore()
   try {
-    // await db
-    //   .update(Orders)
-    //   .set({
-    //     label: input.label,
-    //     status: input.status,
-    //     priority: input.priority,
-    //   })
-    //   .where(inArray(Orders.id, input.ids))
+    await prisma.order.updateMany({
+      where: {
+        id: {
+          in: input.ids,
+        },
+      },
+      data: {
+        status: input.status,
+        order_date: input.order_date,
+      }
+    })
 
     revalidatePath("/")
 
@@ -90,10 +91,11 @@ export async function updateOrders(input: {
 
 export async function deleteOrder(input: { id: string }) {
   try {
-    // await db.delete(Orders).where(eq(Orders.id, input.id))
-
-    // // Create a new Order for the deleted one
-    // await seedOrders({ count: 1 })
+    await prisma.order.delete({
+      where:{
+        id: input.id
+      }
+    })
 
     revalidatePath("/")
   } catch (err) {
@@ -106,12 +108,15 @@ export async function deleteOrder(input: { id: string }) {
 
 export async function deleteOrders(input: { ids: string[] }) {
   try {
-    // await db.delete(Orders).where(inArray(Orders.id, input.ids))
+    await prisma.order.deleteMany({
+      where:{
+        id: {
+          in: input.ids
+        }
+      }
+    })
 
     revalidatePath("/")
-
-    // Create new Orders for the deleted ones
-    // await seedOrders({ count: input.ids.length })
 
     return {
       data: null,

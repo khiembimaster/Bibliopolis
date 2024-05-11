@@ -1,3 +1,6 @@
+import { OrderStatus } from "@prisma/client"
+import { Decimal } from "@prisma/client/runtime/library"
+import exp from "constants"
 
 
 export interface SearchParams {
@@ -26,6 +29,31 @@ export interface DataTableFilterOption<TData> {
   filterValues?: string[]
   filterOperator?: string
   isMulti?: boolean
+}
+
+// Order Result
+
+export type ShippingInfo = {
+  addressLine1: string,
+  addressLine2: string | null,
+  city: string,
+  state: string,
+  deliveryMethod: string,
+  trackingNumber: string | null
+}
+
+export type User = {
+  name: string | null,
+  email: string | null,
+}
+
+export type Order = {
+  id: string,
+  user: User,
+  shippingInfo?: ShippingInfo | null
+  status: OrderStatus,
+  order_date: Date
+  total_price: Decimal
 }
 
 // export type DrizzleWhere<T> =

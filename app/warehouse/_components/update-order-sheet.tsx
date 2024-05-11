@@ -36,7 +36,8 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { updateOrder } from "../_lib/actions"
 import { updateOrderSchema, type UpdateOrderSchema } from "../_lib/validations"
-import { Order, OrderStatus } from "@prisma/client"
+import { OrderStatus } from "@prisma/client"
+import { Order } from "@/types/index"
 
 interface UpdateOrderSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {

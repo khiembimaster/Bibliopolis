@@ -1,5 +1,4 @@
 import * as React from "react"
-import { tasks, type Task } from "@/db/schema"
 import {
   ArrowUpIcon,
   CheckCircledIcon,
@@ -28,18 +27,20 @@ import {
 } from "@/components/ui/tooltip"
 import { Kbd } from "@/components/kbd"
 
-import { deleteTasks, updateTasks } from "../_lib/actions"
+import { deleteOrders, updateOrders } from "../_lib/actions"
+import { Order } from "@/types/index"
+import { OrderStatus } from "@prisma/client"
 
-interface TasksTableFloatingBarProps {
-  table: Table<Task>
+interface OrdersTableFloatingBarProps {
+  table: Table<Order>
 }
 
-export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
+export function OrdersTableFloatingBar({ table }: OrdersTableFloatingBarProps) {
   const rows = table.getFilteredSelectedRowModel().rows
 
   const [isPending, startTransition] = React.useTransition()
   const [method, setMethod] = React.useState<
-    "update-status" | "update-priority" | "export" | "delete"
+    "update-status" | "export" | "delete"
   >()
 
   // Clear selection on Escape key press
@@ -88,11 +89,11 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
           <Separator orientation="vertical" className="hidden h-5 sm:block" />
           <div className="flex items-center gap-1.5">
             <Select
-              onValueChange={(value: Task["status"]) => {
+              onValueChange={(value: OrderStatus) => {
                 setMethod("update-status")
 
                 startTransition(async () => {
-                  const { error } = await updateTasks({
+                  const { error } = await updateOrders({
                     ids: rows.map((row) => row.original.id),
                     status: value,
                   })
@@ -102,7 +103,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                     return
                   }
 
-                  toast.success("Tasks updated")
+                  toast.success("Orders updated")
                 })
               }}
             >
@@ -135,70 +136,13 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
               </Tooltip>
               <SelectContent align="center">
                 <SelectGroup>
-                  {tasks.status.enumValues.map((status) => (
+                  {Object.keys(OrderStatus).map((status) => (
                     <SelectItem
                       key={status}
                       value={status}
                       className="capitalize"
                     >
                       {status}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select
-              onValueChange={(value: Task["priority"]) => {
-                setMethod("update-priority")
-
-                startTransition(async () => {
-                  const { error } = await updateTasks({
-                    ids: rows.map((row) => row.original.id),
-                    priority: value,
-                  })
-
-                  if (error) {
-                    toast.error(error)
-                    return
-                  }
-
-                  toast.success("Tasks updated")
-                })
-              }}
-            >
-              <Tooltip delayDuration={250}>
-                <SelectTrigger asChild>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                      disabled={isPending}
-                    >
-                      {isPending && method === "update-priority" ? (
-                        <ReloadIcon
-                          className="size-3.5 animate-spin"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <ArrowUpIcon className="size-3.5" aria-hidden="true" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                </SelectTrigger>
-                <TooltipContent className=" border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Update priority</p>
-                </TooltipContent>
-              </Tooltip>
-              <SelectContent align="center">
-                <SelectGroup>
-                  {tasks.priority.enumValues.map((priority) => (
-                    <SelectItem
-                      key={priority}
-                      value={priority}
-                      className="capitalize"
-                    >
-                      {priority}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -246,7 +190,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                     setMethod("delete")
 
                     startTransition(async () => {
-                      const { error } = await deleteTasks({
+                      const { error } = await deleteOrders({
                         ids: rows.map((row) => row.original.id),
                       })
 
