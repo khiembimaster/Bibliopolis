@@ -28,8 +28,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       userId: userId,
       order_date: order_date,
       total_price: parseFloat(total_price),
-      shipping_address: shipping_address,
-      billing_address: billing_adddresss,
+      //shipping_address: shipping_address,
+      //billing_address: billing_adddresss,
       status: status
     },
   });

@@ -113,10 +113,27 @@ export default function CartList() {
     }
   };
   const checkout = async () => {
-    const shippingAddress = document.getElementById(
-      "address"
+    const shippingAddress1 = document.getElementById(
+      "address1"
     ) as HTMLInputElement;
-    console.log(shippingAddress.value);
+    const shippingAddress2 = document.getElementById(
+      "address2"
+    ) as HTMLInputElement;
+    const city = document.getElementById(
+      "city"
+    ) as HTMLInputElement;
+    const country = document.getElementById(
+      "country"
+    ) as HTMLInputElement;
+    const phone = document.getElementById(
+      "phone"
+    ) as HTMLInputElement;
+    const name = document.getElementById(
+      "name"
+    ) as HTMLInputElement;
+    const email = document.getElementById(
+      "email"
+    ) as HTMLInputElement;
     const totalBill = items.reduce(
       (total, item) => total + item.quantity * item.book.price,
       0
@@ -134,7 +151,13 @@ export default function CartList() {
             products: items,
             userId,
             cartId,
-            shippingAddress: shippingAddress.value,
+            shippingAddress1: shippingAddress1.value,
+            shippingAddress2: shippingAddress2.value,
+            city: city.value,
+            country: country.value,
+            name: name.value,
+            phone: phone.value,
+            email: email.value,
             totalBill: totalBill,
           }),
         });
@@ -250,19 +273,43 @@ export default function CartList() {
                   <Label htmlFor="name" className="text-right">
                     Full name
                   </Label>
-                  <Input id="name" className="col-span-3" required />
+                  <Input id="name" className="col-span-3" placeholder="James mary" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="address" className="text-right">
-                    Address
+                    Address 1
                   </Label>
-                  <Input id="address" className="col-span-3" required />
+                  <Input id="address1" className="col-span-3" placeholder="house number, street name" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4 mt-5">
+                  <Label htmlFor="address" className="text-right">
+                    Address 2
+                  </Label>
+                  <Input id="address2" className="col-span-3" placeholder="ward, district" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4 mt-5">
+                  <Label htmlFor="address" className="text-right">
+                    City
+                  </Label>
+                  <Input id="city" className="col-span-3" placeholder="City, province" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4 mt-5">
+                  <Label htmlFor="address" className="text-right">
+                    Country
+                  </Label>
+                  <Input id="country" className="col-span-3" placeholder="ward, district" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="phone" className="text-right">
                     Phone
                   </Label>
-                  <Input id="phone" className="col-span-3" required />
+                  <Input id="phone" className="col-span-3" placeholder="+8436254569" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4 mt-5">
+                  <Label htmlFor="phone" className="text-right">
+                    Email
+                  </Label>
+                  <Input id="email" className="col-span-3" placeholder="...@gmail.com" required />
                 </div>
               </div>
               <DialogFooter>

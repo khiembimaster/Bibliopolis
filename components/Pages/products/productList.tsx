@@ -170,7 +170,7 @@ export default function ProductList() {
               <div>
                 <Image
                   src={product.cover_image}
-                  alt={product.title}
+                  alt={"Landscape picture"}
                   width={300}
                   height={200}
                   className="w-full h-48 object-cover mb-4"

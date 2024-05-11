@@ -11,11 +11,11 @@ const getActiveProducts = async () => {
 };
 
 export const POST = async (request: any) => {
-  const { products, userId, cartId, shippingAddress, totalBill } = await request.json();
+  const { products, userId, cartId, shippingAddress1, shippingAddress2, city, country, name, phone, email, totalBill } = await request.json();
   const data = products;
   console.log(data)
   console.log("111", totalBill)
-  const newOrder = await createOrder(userId, cartId, shippingAddress, totalBill, data); 
+  const newOrder = await createOrder(userId, cartId, shippingAddress1, shippingAddress2, city, country, name, phone,email, totalBill, data); 
   let activeProducts = await getActiveProducts();
 
   try {

@@ -1,4 +1,5 @@
 'use server'
+import { use } from "react";
 import prisma from "../client"
 
 
@@ -294,7 +295,7 @@ const getBooksInCart = async (userId: string) => {
     return transformedItems;
 }
 
-const createOrder = async (userId: string, cartId: number, shippingAddress: string, total_price: number, cartList: { id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]) => {
+const createOrder = async (userId: string, cartId: number, shippingAddress1: string, shippingAddress2: string, city: string, country: string, name: string, phone: string, email: string, total_price: number, cartList: { id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]) => {
     try {
         const existingCart = await prisma.cart.findFirst({
             where: {
@@ -304,17 +305,27 @@ const createOrder = async (userId: string, cartId: number, shippingAddress: stri
         const newOrder = await prisma.order.create({
             data: {
                 userId: userId,
-                shipping_address: shippingAddress,
                 total_price: total_price,
-                billing_address: "",
-                status: "UNPAID",
+                status: "UNAPPROVED",
                 order_date: new Date(),
+                shippingInfo: {
+                    create: {
+                        addressLine1: shippingAddress1,
+                        addressLine2: shippingAddress2,
+                        city: city,
+                        country: country,
+                        phone: phone,
+                        name: name,
+                        email: email,
+                    }
+                },
                 books: {
                     createMany: {
                         data: cartList.map(item => ({
                             bookId: item.book.id,
-                            quantity: item.quantity
-
+                            quantity: item.quantity,
+                            total: 0
+                            
                         }))
                     }
                 }
@@ -344,6 +355,7 @@ const findAllGenre = async () => {
     }
 }
 const findAllOrder = async (userId: string) => {
+    console.log(userId)
     const listOrder = await prisma.order.findMany({
         where: {
             userId: userId,
@@ -421,7 +433,15 @@ const getGenresOfBook = async (bookId: number) => {
         throw new Error(`Failed to fetch genres of book: `);
     }
 };
+const getShippingInfo = async (orderId: string) => {
+    const shippingInfo = await prisma.shippingInfo.findFirst({
+        where: {
+            orderId: orderId
+        }
+    })
+    return shippingInfo
+}
 export {
-    GetAllBook,getGenresOfBook, getOrder, GetByBookDetail, findAllOrder, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
+    GetAllBook,getShippingInfo,getGenresOfBook, getOrder, GetByBookDetail, findAllOrder, addToCart, createCart, getToYourCart, deleteItemCart, updateItemCart,
     updateCartItemQuantity, deleteCartItem, getBooksInCart, searchBooksByName, maxPriceBook, createOrder, findAllGenre, getCart, getBookOrder
 };

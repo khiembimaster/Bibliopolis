@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { getBookOrder, getOrder } from '@/app/action';
+import { getBookOrder, getOrder, getShippingInfo } from '@/app/action';
+import { formatDate } from 'date-fns';
 
 export default function Page() {
   const router = useParams();
   const orderId = router.id as string;
   const [items, setItems] = useState<{ id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
   const [order, setOrder] = useState<NonNullable<any>>(null);
+  const [shippingInfo, setShippingInfo] = useState<NonNullable<any>>(null);
   useEffect(() => {
     const fetchOrderBooks = async () => {
       try {
@@ -39,6 +41,21 @@ export default function Page() {
       fetchOrder();
     }
   }, [orderId]);
+  useEffect(() => {
+    const fetchShip = async () => {
+      try {
+        const ship = await getShippingInfo(orderId);
+        console.log(ship)
+        setShippingInfo(ship);
+      } catch (error) {
+        console.error("Error fetching order:", error);
+      }
+    };
+
+    if (orderId) {
+      fetchShip();
+    }
+  }, [orderId]);
 
   return (
     <div className='grid grid-cols-3 gap-10 ms-10 mt-10'>
@@ -51,16 +68,17 @@ export default function Page() {
         <div className='flex gap-40 mt-5'>
           <div>
             <p className='font-bold'>Order date</p>
-            <p>{String(order?.order_date)}</p>
+            <p> {String(order?.order_date)}</p>
           </div>
           <div className='flex gap-60 justify-center'>
             <div>
               <p className='font-bold'>Shipping Address</p>
-              <p>{String(order?.shipping_address)}</p>
+              <p>{String(shippingInfo?.addressLine1)} - {String(shippingInfo?.addressLine2)} - {String(shippingInfo?.city)} - {String(shippingInfo?.country)}</p>
             </div>
             <div>
               <p className='font-bold'>Contract</p>
-              <p>0708033506</p> 
+              <p>{String(shippingInfo?.phone)}</p> 
+              <p>{String(shippingInfo?.email)}</p> 
             </div>
             <div>
               <p className='font-bold'>Status</p>
