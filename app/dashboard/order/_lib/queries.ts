@@ -7,6 +7,36 @@ import { Order } from "@/types/index"
 import prisma from "@/client"
 import { OrderStatus } from "@prisma/client"
 
+export async function getOrderDetails (orderId: string | undefined){
+  const order = await prisma.order.findUniqueOrThrow({
+    where:{
+      id: orderId 
+    },
+    include: {
+      user: {
+        select:{
+          name: true,
+          email: true,
+        }
+      },
+      books: {
+        select: {
+          quantity: true,
+          book: {
+            select: {
+              price: true,
+              title: true,
+            }
+          }
+        }
+      },
+      shippingInfo: true
+    }
+  })
+
+  return order;
+}
+
 export async function getOrders(input: GetOrdersSchema) {
   noStore()
   const { page, per_page, sort, status, min, max, from, to} =

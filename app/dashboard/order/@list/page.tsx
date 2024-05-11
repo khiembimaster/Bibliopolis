@@ -1,128 +1,60 @@
-import prisma from "@/client"
-import { DataTable } from "./data-table"
-import { columns } from "./columns"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ListFilter, File } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DateRangePicker } from "@/components/date-range-picker"
+import React from "react"
+import { OrdersTable } from "./_components/orders-table"
+import { Shell } from "@/components/shell"
+import { auth } from "@/auth"
+import { SearchParams } from "@/types/index"
+import { searchParamsSchema } from "../_lib/validations"
+import { Role } from "@prisma/client"
+import { getOrders } from "../_lib/queries"
 
-const getOrders = async (deltaTime: Date)=>{
-  const orders = await prisma.order.findMany({
-    where: {
-      order_date: {
-        gte: deltaTime
-      }
-    },
-    select: {
-      id:true,
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-      status: true,
-      order_date: true,
-      total_price: true
-    }
-  });
-  return orders;
+export interface Props {
+  searchParams: SearchParams
 }
 
-const OrderTable = async () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const monday = new Date(today.setDate(today.getDate() - (today.getDay() || 7) + 1));
-  const this_week_orders = await getOrders(monday);
-
-  const startOfThisMonth = new Date(today.setDate(1));
-  const this_month_orders = await getOrders(startOfThisMonth);
-
-  const startOfThisYear = new Date(today.setMonth(0, 0));
-  const this_year_orders = await getOrders(startOfThisYear);
-
-
+const AdminOrderPage = async ({ searchParams }: Props) => {
+  const search = searchParamsSchema.parse(searchParams)
+  const ordersPromise = getOrders(search)
+  
+  const session = await auth();
+  if(session?.user.role !== Role.ADMIN) return null;
   return (
-    <Tabs defaultValue="week">
-    <div className="flex items-center">
-      <TabsList>
-        <TabsTrigger value="week">Week</TabsTrigger>
-        <TabsTrigger value="month">Month</TabsTrigger>
-        <TabsTrigger value="year">Year</TabsTrigger>
-      </TabsList>
-      <div className="ml-auto flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 text-sm"
-            >
-              <ListFilter className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only">Filter</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem checked>
-              Fulfilled
-            </DropdownMenuCheckboxItem>
-
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7 gap-1 text-sm"
-        >
-          <File className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only">Export</span>
-        </Button>
-      </div>
-    </div>
-    <TabsContent value="week">
-      <Card x-chunk="dashboard-05-chunk-3">
-        <CardHeader className="px-7">
-          <CardTitle>Orders</CardTitle>
-          <CardDescription>
-            Recent orders from your store.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={this_week_orders} />
-        </CardContent>
-      </Card>
-    </TabsContent>
-    <TabsContent value="month">
-      <Card x-chunk="dashboard-05-chunk-3">
-        <CardHeader className="px-7">
-          <CardTitle>Orders</CardTitle>
-          <CardDescription>
-            Recent orders from your store.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={this_month_orders} />
-        </CardContent>
-      </Card>
-    </TabsContent>
-    <TabsContent value="year">
-      <Card x-chunk="dashboard-05-chunk-3">
-        <CardHeader className="px-7">
-          <CardTitle>Orders</CardTitle>
-          <CardDescription>
-            Recent orders from your store.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={this_year_orders} />
-        </CardContent>
-      </Card>
-    </TabsContent>
-  </Tabs>
+    <Shell className="gap-2">
+      {/**
+       * The `DateRangePicker` component is used to render the date range picker UI.
+       * It is used to filter the tasks based on the selected date range it was created at.
+       * The business logic for filtering the tasks based on the selected date range is handled inside the component.
+       */}
+      <DateRangePicker
+        triggerSize="sm"
+        triggerClassName="ml-auto w-56 sm:w-60"
+        align="end"
+        dateRange={
+          search.from && search.to
+            ? { from: new Date(search.from), to: new Date(search.to) }
+            : undefined
+        }
+      />
+      <React.Suspense
+        fallback={
+          <DataTableSkeleton
+            columnCount={5}
+            searchableColumnCount={1}
+            filterableColumnCount={2}
+            cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem"]}
+            shrinkZero
+          />
+        }
+      >
+        {/**
+         * Passing promises and consuming them using React.use for triggering the suspense fallback.
+         * @see https://react.dev/reference/react/use
+         */}
+        <OrdersTable ordersPromise={ordersPromise} />
+      </React.Suspense>
+    </Shell>
   )
 }
 
-export default OrderTable
+export default AdminOrderPage

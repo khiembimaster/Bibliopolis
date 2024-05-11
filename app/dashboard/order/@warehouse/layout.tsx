@@ -7,7 +7,7 @@ interface Props {
 const WarehouseControlLayout = ({children}: Props) => {
   return (
     <>
-      <main>{children}</main>
+      {children}
     </>
   )
 }

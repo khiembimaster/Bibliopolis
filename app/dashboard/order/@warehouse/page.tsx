@@ -4,8 +4,8 @@ import React from 'react'
 import { OrdersTable } from './_components/orders-table';
 import { Shell } from '@/components/shell';
 import { DateRangePicker } from '@/components/date-range-picker';
-import { searchParamsSchema } from './_lib/validations';
-import { getOrders } from './_lib/queries';
+import { searchParamsSchema } from '../_lib/validations';
+import { getOrders } from '../_lib/queries';
 import { SearchParams } from '@/types/index';
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 
@@ -14,15 +14,13 @@ export interface IndexPageProps {
   searchParams: SearchParams
 }
 
-const OrderManagement = async ({ searchParams }: IndexPageProps) => {
+const WarehouseOrderPage = async ({ searchParams }: IndexPageProps) => {
   const search = searchParamsSchema.parse(searchParams)
   const ordersPromise = getOrders(search)
   
   const session = await auth();
   
   if(session?.user?.role === Role.WAREHOUSE_STAFF ) {
-    
-    // session.user.id
     return (
       <Shell className="gap-2">
         {/**
@@ -60,8 +58,8 @@ const OrderManagement = async ({ searchParams }: IndexPageProps) => {
       </Shell>
     ) 
   }
-  // return <Button>You are not authorized to view this page!</Button>;
+
   return;
 }
 
-export default OrderManagement
+export default WarehouseOrderPage

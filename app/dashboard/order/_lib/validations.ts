@@ -10,6 +10,7 @@ export const searchParamsSchema = z.object({
   max: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
+  orderId: z.string().optional(),
   operator: z.enum(["and", "or"]).optional(),
 })
 

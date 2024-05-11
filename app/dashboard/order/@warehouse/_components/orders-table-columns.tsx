@@ -25,11 +25,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 
-import { updateOrder } from "../_lib/actions"
-import { getStatusIcon } from "../_lib/utils"
+import { updateOrder } from "../../_lib/actions"
+import { getStatusIcon } from "../../_lib/utils"
 import { DeleteOrdersDialog } from "./delete-orders-dialog"
 import { UpdateOrderSheet } from "./update-order-sheet"
-import { Order, User } from "@/types/index"
+import { Order, ShippingInfo, User } from "@/types/index"
 import { OrderStatus } from "@prisma/client"
 
 export function getColumns(): ColumnDef<Order>[] {
@@ -105,9 +105,26 @@ export function getColumns(): ColumnDef<Order>[] {
     {
       accessorKey: "order_date",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created At" />
+        <DataTableColumnHeader column={column} title="Order Date" />
       ),
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
+    },
+    {
+      id:"address",
+      accessorKey: "shippingInfo",
+      header: () => "Address",
+      cell: ({ cell }) => {
+        const info = cell.getValue() as ShippingInfo;
+        if(info === null) return "NOT PROVIDED";
+        return (
+          <>
+            <div className="font-medium">{info?.addressLine1}</div>
+            <div className="hidden text-sm text-muted-foreground md:inline">
+              {info?.city}
+            </div>
+          </>
+        );
+      },
     },
     {
       id: "actions",

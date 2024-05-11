@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 
-import { updateOrder } from "../_lib/actions"
-import { updateOrderSchema, type UpdateOrderSchema } from "../_lib/validations"
+import { updateOrder } from "../../_lib/actions"
+import { updateOrderSchema, type UpdateOrderSchema } from "../../_lib/validations"
 import { OrderStatus } from "@prisma/client"
 import { Order } from "@/types/index"
 

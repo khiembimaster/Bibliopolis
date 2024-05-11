@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Kbd } from "@/components/kbd"
 
-import { deleteOrders, updateOrders } from "../_lib/actions"
+import { deleteOrders, updateOrders } from "../../_lib/actions"
 import { Order } from "@/types/index"
 import { OrderStatus } from "@prisma/client"
 

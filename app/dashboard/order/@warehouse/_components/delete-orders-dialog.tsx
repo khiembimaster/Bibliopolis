@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import { deleteOrders } from "../_lib/actions"
+import { deleteOrders } from "../../_lib/actions"
 import { Order } from "@/types/index"
 
 interface DeleteOrdersDialogProps
