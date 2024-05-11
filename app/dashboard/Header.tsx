@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 
 import React from 'react'
-import { Home, LineChart, Package, Package2, PanelLeft, Search, ShoppingCart, Users2 } from "lucide-react"
+import { Home, LineChart, Package, Package2, PanelLeft, Route, Search, ShoppingCart, Users2 } from "lucide-react"
 import Link from "next/link"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Input } from "@/components/ui/input"
@@ -12,20 +12,36 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import Sidebar from "./Sidebar"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { User } from "@prisma/client"
+import { StaticImport } from "next/dist/shared/lib/get-img-props"
+import { useRouter } from "next/navigation"
+
 
 interface SidebarProps {
   links: Array<{
     tooltip_content: string; 
     href: string;
     icon: React.ReactNode;
-  }>
+  }>,
+  user: {
+    email: string;
+    image: string | StaticImport;
+    role: string;
+    name: string
+  }
 }
 
-const Header = ({links}:SidebarProps) => {
+const Header = ({links,user}:SidebarProps) => {
+  
+  const navigateToURL = (url: string) => {
+    router.push(url);
+  };
+  
   const pathname = usePathname()
   const segments = pathname.split('/').slice(1);
   const current_segment = segments.splice(-1).at(0);
   var breadcrumb_link = "";
+  const router = useRouter();
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -103,13 +119,17 @@ const Header = ({links}:SidebarProps) => {
             size="icon"
             className="overflow-hidden rounded-full"
           >
+            {
+              user.image?
             <Image
-              src="/placeholder-user.jpg"
+             src={user.image }
               width={36}
               height={36}
               alt="Avatar"
               className="overflow-hidden rounded-full"
-            />
+            />:null
+            }
+
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -118,7 +138,10 @@ const Header = ({links}:SidebarProps) => {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => {
+                
+                navigateToURL('/api/auth/signout')
+          }}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

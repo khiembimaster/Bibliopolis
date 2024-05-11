@@ -110,9 +110,6 @@ model Order {
   userId           String
   order_date       DateTime
   books            BooksToOrders[]
-  sub_total        Decimal
-  shipping_fee     Decimal
-  tax              Decimal
   total_price      Decimal
   shippingInfo     ShippingInfo?
   status           OrderStatus     @default(UNPAID)

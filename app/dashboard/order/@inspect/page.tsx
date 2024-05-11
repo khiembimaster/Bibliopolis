@@ -1,47 +1,19 @@
-import prisma from '@/client'
 import { OrderDetailsCard } from '@/components/my_components/OrderDetailsCard'
 import { SkeletonCard } from '@/components/my_components/SkeletonCard'
-import { get } from 'http'
+import { SearchParams } from '@/types/index'
 import React from 'react'
+import { searchParamsSchema } from '../_lib/validations'
+import { getOrderDetails } from '../_lib/queries'
 
-interface Props {
-  searchParams: {orderId: string}
+export interface Props {
+  searchParams: SearchParams
 }
 
-const getOrderDetails = async (orderId: string) => {
-  const order = await prisma.order.findUniqueOrThrow({
-    where:{
-      id: orderId 
-    },
-    include: {
-      user: {
-        select:{
-          name: true,
-          email: true,
-        }
-      },
-      books: {
-        select: {
-          quantity: true,
-          book: {
-            select: {
-              price: true,
-              title: true,
-            }
-          }
-        }
-      },
-      shippingInfo: true
-    }
-  })
-
-  return order;
-}
-
-const Inspect = async ({searchParams: {orderId}}:Props) => {
-
+const Inspect = async ({searchParams}:Props) => {
+  const search = searchParamsSchema.parse(searchParams)
+  
   try{
-    const order = await getOrderDetails(orderId); 
+    const order = await getOrderDetails(search.orderId); 
     return (
       <OrderDetailsCard order={order}/>
     )

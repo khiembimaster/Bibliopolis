@@ -84,20 +84,7 @@ export const OrderDetailsCard = ({order}: Props ) => {
               )})
             }
           </ul>
-          <Separator className="my-2" />
           <ul className="grid gap-3">
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">Subtotal</span>
-              <span>${order.sub_total.toString()}</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">Shipping</span>
-              <span>${order.shipping_fee.toString()}</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">Tax</span>
-              <span>${order.tax.toString()}</span>
-            </li>
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Total</span>
               <span>${order.total_price.toString()}</span>
@@ -143,7 +130,7 @@ export const OrderDetailsCard = ({order}: Props ) => {
             </div>
           </dl>
         </div>
-        <Separator className="my-4" />
+        {/* <Separator className="my-4" />
         <div className="grid gap-3">
           <div className="font-semibold">Payment Information</div>
           <dl className="grid gap-3">
@@ -155,7 +142,7 @@ export const OrderDetailsCard = ({order}: Props ) => {
               <dd>**** **** **** 4532</dd>
             </div>
           </dl>
-        </div>
+        </div> */}
       </CardContent>
       <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
         <div className="text-xs text-muted-foreground">
