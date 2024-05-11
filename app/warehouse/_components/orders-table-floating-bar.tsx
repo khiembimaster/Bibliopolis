@@ -183,7 +183,7 @@ export function OrdersTableFloatingBar({ table }: OrdersTableFloatingBarProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className=" border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Export tasks</p>
+                  <p>Export orders</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -223,7 +223,7 @@ export function OrdersTableFloatingBar({ table }: OrdersTableFloatingBarProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className=" border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Delete tasks</p>
+                  <p>Delete orders</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
