@@ -48,12 +48,15 @@ const newBook = (book: Book) => {
 }
 const UpdateButton: React.FC<MyComponentProps> = ({ id, book }) => {
 
-    return <Button onClick={
+    return <Button 
+   
+    
+    onClick={
         () => {
             handle(id, newBook(book))
             //  console.log(book);
         }
-    } className="bg-blue-500 hover:bg-blue-600">✓</Button>
+    } className="h-5 w-5 m-1">✓</Button>
 }
 
 export { UpdateButton }

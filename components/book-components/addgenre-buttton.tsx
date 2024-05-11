@@ -1,5 +1,5 @@
-
-import React from 'react';
+'use client'
+import React, { useEffect, useState } from 'react';
 import { Button } from "../ui/button";
 import { UpdateBook } from '@/app/actions';
 import { Book } from "@prisma/client";
@@ -13,44 +13,57 @@ import { GetAllGenre } from '@/app/actions';
 import { AddBookToGenre } from '@/app/actions';
 import { GenreItem } from './genre-item';
 import { Genre } from '@prisma/client';
+import { BookFull, GenreFull } from '@/type/type';
+import { number } from 'zod';
+
 interface MyComponentProps {
-   
-    book: Book
+    book: BookFull
+    // genres: GenreFull[]
 }
 
 
 
-const AddGenreButton: React.FC<MyComponentProps> = async ({book }) => {
+const AddGenreButton: React.FC<MyComponentProps> = ({ book }) => {
+
+    const [genres, setGenres] = useState<GenreFull[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const genresData = await GetAllGenre(); // Assuming serverAction is a promise-based function that fetches genres data
+                setGenres(genresData);
+            } catch (error) {
+                // Handle error
+            }
+        };
+
+        fetchData();
+    }, []);
 
     
-    let genres =await GetAllGenre();
-    console.log("abc");
-    for (const g of genres){
-        if (g.books.includes(book)) {
-            genres.splice(0,1);
-        }
-    }
-  
+    // const genres = GetAllGenre()
+
     return <Popover>
-    <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >⇦</PopoverTrigger>
-    <PopoverContent>
-        <ul>
-            
-            {genres.map((genre)=>(
-               
-                <div key={genre.id}>
-                   <GenreItem genre={genre as Genre} bookid={book.id}/>
-                </div>
-             
-            )) 
+        <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >⇦</PopoverTrigger>
+        <PopoverContent>
+            <ul>
 
-            }
-        </ul>
-     
-    </PopoverContent>
+                {genres.map((genre) => (
+
+                    <div key={genre.id} >
+                        <GenreItem genre={genre as Genre} bookid={book.id} />
+                    </div>
+                ))
+
+                }
+            </ul>
+
+        </PopoverContent>
     </Popover>
-}
+};
 
 
 
-export {AddGenreButton};
+
+
+export { AddGenreButton };

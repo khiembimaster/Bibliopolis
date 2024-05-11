@@ -1,4 +1,4 @@
-'use client'
+'use server'
 import { Input } from '@/components/ui/input'
 import {
     Card,
@@ -16,60 +16,95 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { CreateBook } from '@/app/actions'
+import { GetAllGenre } from '@/app/actions'
+import { GenreItem } from './genre-item'
+import { Genre } from '@prisma/client'
+import React, { useEffect, useState } from 'react';
+import { AddbookButton } from './addbook-button'
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-const AddbookSheet = () => {
+
+const AddbookSheet = async () => {
+
+    let genres = await GetAllGenre();
+
+
     return <main>
         <Sheet>
-            <SheetTrigger className='border p-2 bg-black text-white rounded-full'>
+            <SheetTrigger className='border p-2 bg-black text-white rounded-full hover:bg-white hover:text-black '>
                 Add a book
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>Fill all information about new book</SheetTitle>
+                  
                     <SheetDescription>
+                    <ScrollArea className="h-[600px] w-full">
                         <Card>
                             <CardContent>
-                                <CardTitle>Title</CardTitle>
+                                <CardTitle className="text-base">Title</CardTitle>
                                 <CardDescription>
                                     <Input id='title' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Author</CardTitle>
+                                <CardTitle className="text-base">Author</CardTitle>
                                 <CardDescription>
                                     <Input id='author' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Price</CardTitle>
+                                <CardTitle className="text-base">Price</CardTitle>
                                 <CardDescription>
                                     <Input id='price' />
                                 </CardDescription>
                             </CardContent>
+                            <CardContent>
+                            <CardTitle className="text-base">Genre</CardTitle>
+                                <div className="combobox">
+                                    <select id="genreCombobox">
+                                   
+                                        {genres.map((genre) => (
+                                            
+                                                <option key={genre.id} value={genre.id}>{genre.name}</option>
+                                        
+                                        ))}
+                                    </select>
+                                </div>
+
+
+                            </CardContent>
+
+
 
                             <CardContent>
 
-                                <CardTitle>Publication-year</CardTitle>
+                                <CardTitle className="text-base">Publication-year</CardTitle>
                                 <CardDescription>
                                     <Input id='date' type="date" />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Stock-quantity</CardTitle>
+                                <CardTitle className="text-base">Stock-quantity</CardTitle>
                                 <CardDescription>
                                     <Input id='quantity' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Publisher</CardTitle>
+                                <CardTitle className="text-base">Publisher</CardTitle>
                                 <CardDescription>
                                     <Input id='publisher' />
                                 </CardDescription>
                             </CardContent>
                             <CardContent>
-                                <CardTitle>Cover-image</CardTitle>
+                                <CardTitle className="text-base">Cover-image</CardTitle>
                                 <CardDescription>
                                     <input id='image' type='file' />
                                 </CardDescription>
@@ -77,27 +112,17 @@ const AddbookSheet = () => {
                             </CardContent>
 
                             <CardContent>
-                                <Button onClick={handle}>submit</Button>
+                                <AddbookButton></AddbookButton>
                             </CardContent>
                         </Card>
+                        </ScrollArea>
                     </SheetDescription>
+                
                 </SheetHeader>
             </SheetContent>
         </Sheet>
-    </main>
+    </main >
 }
 
-const handle = () => {
-    const inputTitle = document.getElementById('title') as HTMLInputElement;
-    const inputDate = document.getElementById('date') as HTMLInputElement;
-    const inputAuthor = document.getElementById('author') as HTMLInputElement;
-    const inputPrice = document.getElementById('price') as HTMLInputElement;
-    const inputQuantity = document.getElementById('quantity') as HTMLInputElement;
-    const inputPublisher = document.getElementById('publisher') as HTMLInputElement;
-    const inputImage = document.getElementById('image') as HTMLInputElement;
 
-    CreateBook(inputTitle.value, new Date(inputDate.value), inputAuthor.value,
-        Number(inputPrice.value), Number(inputQuantity.value), inputPublisher.value, inputImage.value)
-        
-}
 export { AddbookSheet };
