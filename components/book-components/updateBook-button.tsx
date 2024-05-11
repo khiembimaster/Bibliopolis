@@ -54,6 +54,7 @@ const UpdateButton: React.FC<MyComponentProps> = ({ id, book }) => {
     onClick={
         () => {
             handle(id, newBook(book))
+            window.location.reload();
             //  console.log(book);
         }
     } className="h-5 w-5 m-1">✓</Button>

@@ -8,8 +8,6 @@ import {v4} from "uuid";
 const handle = async () => {
    
 
-
-
     const inputTitle = document.getElementById('title') as HTMLInputElement;
     const inputDate = document.getElementById('date') as HTMLInputElement;
     const inputAuthor = document.getElementById('author') as HTMLInputElement;
@@ -29,7 +27,8 @@ const handle = async () => {
         const url =await getDownloadURL(imgref);
         
     CreateBook(inputTitle.value, new Date(inputDate.value), inputAuthor.value,
-    Number(inputPrice.value), Number(inputQuantity.value), inputPublisher.value, url, Number(selectedValue))
+    Number(inputPrice.value), Number(inputQuantity.value), inputPublisher.value, url, Number(selectedValue));
+
         window.location.reload();
     }
 }

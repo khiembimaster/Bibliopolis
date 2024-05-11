@@ -17,8 +17,7 @@ interface MyComponentProps {
 
 const BookImage : React.FC<MyComponentProps> = ({book}) =>{
 
-    
-
+  
    return <HoverCard>
   <HoverCardTrigger>Image</HoverCardTrigger>
   <HoverCardContent>
@@ -26,8 +25,8 @@ const BookImage : React.FC<MyComponentProps> = ({book}) =>{
   <Image
       src={book.cover_image}
       alt="Landscape picture"
-      width={800}
-      height={500}
+      width={200}
+       height={200}
     />
   </HoverCardContent>
 </HoverCard>

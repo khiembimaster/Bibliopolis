@@ -44,7 +44,7 @@ const AddGenreButton: React.FC<MyComponentProps> = ({ book }) => {
     // const genres = GetAllGenre()
 
     return <Popover>
-        <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >⇦</PopoverTrigger>
+        <PopoverTrigger className="bg-black hover:bg-blue-700 text-white font-bold w-full py-1 rounded" >⇦</PopoverTrigger>
         <PopoverContent>
             <ul>
 
