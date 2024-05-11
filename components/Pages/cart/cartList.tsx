@@ -34,9 +34,10 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function CartList() {
+  const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user.id;
-  const cartId = Number(getCart(userId));
+  const [cartId, setCartID] = useState<number>(NaN);
   const [items, setItems] = useState<
     {
       id: number;
@@ -55,6 +56,8 @@ export default function CartList() {
     const fetchCartItems = async () => {
       try {
         const itemList = await getBooksInCart(userId);
+        const dbCartId = await Number(getCart(userId));
+        setCartID(dbCartId);
         setItems(itemList);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -75,12 +78,12 @@ export default function CartList() {
     setItems(updatedItems);
 
     // Update the item quantity and total price in the database
-    const { id: bookId, book, quantity } = updatedItems[index];
+    const { id: bookId } = updatedItems[index];
     const total_price = items.reduce(
       (total, item) => total + item.quantity * item.book.price,
       0
     );
-    const c = await updateCartItemQuantity(
+    await updateCartItemQuantity(
       userId,
       cartId,
       bookId,
