@@ -33,7 +33,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const selectedValues = new Set(column?.getFilterValue() as string[])
-
+  
   return (
     <Popover>
       <PopoverTrigger asChild>

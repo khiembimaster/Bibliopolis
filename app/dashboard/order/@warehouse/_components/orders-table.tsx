@@ -60,7 +60,7 @@ export function OrdersTable({ ordersPromise }: OrdersTableProps) {
     pageCount,
     // optional props
     filterFields,
-    enableAdvancedFilter: true,
+    enableAdvancedFilter: false,
     defaultPerPage: 10,
     defaultSort: "order_date.desc",
   })

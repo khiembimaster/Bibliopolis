@@ -60,19 +60,17 @@ export function getColumns(): ColumnDef<Order>[] {
     },
     {
       accessorKey: "user",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Customer" />
-      ),
+      header: () => "Customer",
       cell: ({ row }) => {
         const user = row.getValue("user") as User
 
         return (
-          <div className="flex space-x-2">
+          <>
             <div className="font-medium">{user.name}</div>
             <div className="hidden text-sm text-muted-foreground md:inline">
               {user.email}
             </div>
-          </div>
+          </>
         )
       },
     },

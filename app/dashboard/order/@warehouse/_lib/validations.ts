@@ -5,7 +5,7 @@ export const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
   per_page: z.coerce.number().default(10),
   sort: z.string().optional(),
-  status: z.nativeEnum(OrderStatus).optional(),
+  status: z.string().optional(),
   min: z.string().optional(),
   max: z.string().optional(),
   from: z.string().optional(),

@@ -5,6 +5,7 @@ import { unstable_noStore as noStore } from "next/cache"
 import { type GetOrdersSchema } from "./validations"
 import { Order } from "@/types/index"
 import prisma from "@/client"
+import { OrderStatus } from "@prisma/client"
 
 export async function getOrders(input: GetOrdersSchema) {
   noStore()
@@ -21,6 +22,8 @@ export async function getOrders(input: GetOrdersSchema) {
       "order_date",
       "desc",
     ]) as [keyof Order | undefined, "asc" | "desc" | undefined]
+
+    const statuses = status?.split(".") as OrderStatus[]
   
     // Convert the date strings to Date objects
     const fromDay = from ? new Date(from) : undefined
@@ -30,7 +33,9 @@ export async function getOrders(input: GetOrdersSchema) {
     const [data, total] = await prisma.$transaction([
       prisma.order.findMany({
         where:{
-          status: status ,
+          status: {
+            in: statuses
+          } ,
           total_price: {
             gte: min,
             lte: max
@@ -70,7 +75,9 @@ export async function getOrders(input: GetOrdersSchema) {
       }),
       prisma.order.count({
         where:{
-          status: status ,
+          status: {
+            in: statuses
+          },
           total_price: {
             gte: min,
             lte: max
