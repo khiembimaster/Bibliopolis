@@ -94,9 +94,7 @@ CREATE TABLE `Order` (
     `userId` VARCHAR(191) NOT NULL,
     `order_date` DATETIME(3) NOT NULL,
     `total_price` DECIMAL(65, 30) NOT NULL,
-    `shipping_address` VARCHAR(191) NOT NULL,
-    `billing_address` VARCHAR(191) NOT NULL,
-    `status` ENUM('UNPAID', 'READY_TO_SHIP', 'PROCESSED', 'RETRY_SHIP', 'SHIPPED', 'TO_CONFIRM_RECEIVE', 'COMPLETED', 'TO_RETURN', 'IN_CANCEL', 'CANCELLED') NOT NULL DEFAULT 'UNPAID',
+    `status` ENUM('UNAPPROVED', 'APPROVED', 'UNPAID', 'READY_TO_SHIP', 'PROCESSED', 'RETRY_SHIP', 'SHIPPED', 'TO_CONFIRM_RECEIVE', 'COMPLETED', 'TO_RETURN', 'IN_CANCEL', 'CANCELLED') NOT NULL DEFAULT 'UNPAID',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -135,10 +133,33 @@ CREATE TABLE `Promotion` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `ShippingInfo` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` VARCHAR(191) NOT NULL,
+    `addressLine1` VARCHAR(191) NOT NULL,
+    `addressLine2` VARCHAR(191) NULL,
+    `city` VARCHAR(191) NOT NULL,
+    `state` VARCHAR(191) NOT NULL,
+    `postalCode` VARCHAR(191) NOT NULL,
+    `country` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NULL,
+    `deliveryMethod` VARCHAR(191) NOT NULL,
+    `trackingNumber` VARCHAR(191) NULL,
+    `orderId` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `ShippingInfo_userId_key`(`userId`),
+    UNIQUE INDEX `ShippingInfo_orderId_key`(`orderId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `BooksToOrders` (
     `bookId` INTEGER NOT NULL,
     `orderId` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
+    `total` DECIMAL(65, 30) NOT NULL,
 
     PRIMARY KEY (`bookId`, `orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -187,6 +208,12 @@ ALTER TABLE `Review` ADD CONSTRAINT `Review_bookId_fkey` FOREIGN KEY (`bookId`) 
 
 -- AddForeignKey
 ALTER TABLE `Review` ADD CONSTRAINT `Review_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ShippingInfo` ADD CONSTRAINT `ShippingInfo_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ShippingInfo` ADD CONSTRAINT `ShippingInfo_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `BooksToOrders` ADD CONSTRAINT `BooksToOrders_bookId_fkey` FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

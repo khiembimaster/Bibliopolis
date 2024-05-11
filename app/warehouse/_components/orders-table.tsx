@@ -5,7 +5,6 @@ import { OrderStatus } from "@prisma/client"
 import type { DataTableFilterField, Order } from "@/types/index"
 
 import { useDataTable } from "@/hooks/use-data-table"
-import { DataTableAdvancedToolbar } from "@/components/data-table/advanced/data-table-advanced-toolbar"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 
@@ -73,12 +72,10 @@ export function OrdersTable({ ordersPromise }: OrdersTableProps) {
         <OrdersTableFloatingBar table={table} />
       }
     >
-      <DataTableAdvancedToolbar table={table} filterFields={filterFields}>
+
+      <DataTableToolbar table={table} filterFields={filterFields}>
         <OrdersTableToolbarActions table={table} />
-      </DataTableAdvancedToolbar>
-        {/* <DataTableToolbar table={table} filterFields={filterFields}>
-          <OrdersTableToolbarActions table={table} />
-        </DataTableToolbar> */}
+      </DataTableToolbar>
     </DataTable>
   )
 }

@@ -59,15 +59,6 @@ export function getColumns(): ColumnDef<Order>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="ID" />
-      ),
-      cell: ({ row }) => <div className="w-20">{row.getValue("code")}</div>,
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: "user",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Customer" />
