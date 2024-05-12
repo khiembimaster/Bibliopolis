@@ -88,6 +88,7 @@ export default function ProductList() {
     const priceMax = Number(
       (document.getElementById("priceMax") as HTMLInputElement).value
     ); // If maxPrice is not set yet, use 0 as default
+    console.log("111 c", priceMin + " " + priceMax + " " + name + " " + genreId)
     const { books: fetchedBooks, totalPage: fetchedTotalPage } =
       await searchBooksByName(name, genreId, priceMin, priceMax, currentPage, 10);
     setBooks(fetchedBooks);

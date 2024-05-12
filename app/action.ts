@@ -26,52 +26,96 @@ const maxPriceBook = async () => {
 }
 const searchBooksByName = async (name: string, genreId: number, priceStart: number, priceFinish: number, currentPage: number, pageSize: number) => {
     console.log("1112 " + priceStart)
-    const books = await prisma.book.findMany({
-        where: {
-            AND: [
-                {
-                    title: {
-                        contains: name
-                    }
-                },
-                {
-                    price: {
-                        gte: priceStart,
-                        lte: priceFinish
-                    }
-                },
-                {
-                    genres: {
-                        some: {
-                            id: genreId
+    if(genreId === 0)
+        {
+            const books = await prisma.book.findMany({
+                where: {
+                    AND: [
+                        {
+                            title: {
+                                contains: name
+                            }
+                        },
+                        {
+                            price: {
+                                gte: priceStart,
+                                lte: priceFinish
+                            }
                         }
-                    }
-                }
-
-            ]
-        },
-        skip: (currentPage - 1) * pageSize,
-        take: pageSize,
-    });
-    const totalBooksCount = await prisma.book.count({
-        where: {
-            AND: [
-                {
-                    title: {
-                        contains: name
-                    }
+        
+                    ]
                 },
-                {
-                    price: {
-                        gte: priceStart,
-                        lte: priceFinish
-                    }
+                skip: (currentPage - 1) * pageSize,
+                take: pageSize,
+            });
+            const totalBooksCount = await prisma.book.count({
+                where: {
+                    AND: [
+                        {
+                            title: {
+                                contains: name
+                            }
+                        },
+                        {
+                            price: {
+                                gte: priceStart,
+                                lte: priceFinish
+                            }
+                        }
+                    ]
                 }
-            ]
+            });
+            const totalPage = Math.ceil(totalBooksCount / pageSize); // Tính toán tổng số trang
+            return { books, totalPage };
         }
-    });
-    const totalPage = Math.ceil(totalBooksCount / pageSize); // Tính toán tổng số trang
-    return { books, totalPage };
+        else{
+            const books = await prisma.book.findMany({
+                where: {
+                    AND: [
+                        {
+                            title: {
+                                contains: name
+                            }
+                        },
+                        {
+                            price: {
+                                gte: priceStart,
+                                lte: priceFinish
+                            }
+                        },
+                        {
+                            genres: {
+                                some: {
+                                    id: genreId
+                                }
+                            }
+                        }
+        
+                    ]
+                },
+                skip: (currentPage - 1) * pageSize,
+                take: pageSize,
+            });
+            const totalBooksCount = await prisma.book.count({
+                where: {
+                    AND: [
+                        {
+                            title: {
+                                contains: name
+                            }
+                        },
+                        {
+                            price: {
+                                gte: priceStart,
+                                lte: priceFinish
+                            }
+                        }
+                    ]
+                }
+            });
+            const totalPage = Math.ceil(totalBooksCount / pageSize); // Tính toán tổng số trang
+            return { books, totalPage };
+        }
 }
 
 
@@ -139,6 +183,20 @@ const getCart = async (userId: string) => {
 
 }
 const updateItemCart = async (userId: string, total_price: number, cartId: number, bookId: number, quantity: number) => {
+    const book = await prisma.book.findFirst({
+        where: {
+            id: bookId
+        }
+    })
+    const updatedBookQuantity = Number(book?.stock_quantity) - quantity;
+            await prisma.book.update({
+                where: {
+                    id: bookId,
+                },
+                data: {
+                    stock_quantity: updatedBookQuantity
+                },
+            });
     const existingCart = await prisma.cart.findUnique({
         where: {
             userId: userId,
@@ -174,6 +232,8 @@ const updateItemCart = async (userId: string, total_price: number, cartId: numbe
                     },
                 },
             });
+            
+        
             return updatedCart;
         } else {
             const updatedCart = await prisma.cart.update({
@@ -216,6 +276,38 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
             userId: userId
         },
     });
+
+    if (!existingCart) {
+        throw new Error("Cart not found.");
+    }
+
+    const existingItem = await prisma.booksToCarts.findFirst({
+        where: {
+            bookId: bookId,
+            cartId: Number(existingCart.id),
+        },
+    });
+
+    if (!existingItem) {
+        throw new Error("Item not found in the cart.");
+    }
+    const book = await prisma.book.findFirst({
+        where: {
+            id: bookId
+        }
+    })
+    let updatedBookQuantity = 0;
+    const quantityDiff = newQuantity - existingItem.quantity;
+        await prisma.book.update({
+            where: {
+                id: bookId,
+            },
+            data: {
+                stock_quantity:  Number(book?.stock_quantity) - quantityDiff
+            },
+        });
+
+    // Cập nhật số lượng sách trong giỏ hàng
     const updatedCart = await prisma.cart.update({
         where: {
             userId: userId
@@ -227,7 +319,7 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
                     where: {
                         bookId_cartId: {
                             bookId: bookId,
-                            cartId: Number(existingCart?.id)
+                            cartId: Number(existingCart.id)
                         }
                     },
                     data: {
@@ -239,7 +331,8 @@ const updateCartItemQuantity = async (userId: string, cartId: number, bookId: nu
     });
 
     return updatedCart;
-}
+};
+
 
 
 const deleteCartItem = async (userId: string, cartId: number, bookId: number, total_price: number) => {
@@ -248,6 +341,26 @@ const deleteCartItem = async (userId: string, cartId: number, bookId: number, to
             userId: userId
         },
     });
+    const existingItem = await prisma.booksToCarts.findFirst({
+        where: {
+            bookId: bookId,
+            cartId: Number(existingCart?.id),
+        },
+    });
+
+    const book = await prisma.book.findFirst({
+        where: {
+            id: bookId
+        }
+    })
+        await prisma.book.update({
+            where: {
+                id: bookId,
+            },
+            data: {
+                stock_quantity:  Number(book?.stock_quantity) + Number(existingItem?.quantity)
+            },
+        })
     const updatedCart = await prisma.cart.update({
         where: {
             userId: userId

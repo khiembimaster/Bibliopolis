@@ -10,9 +10,7 @@ export async function POST(req: Request) {
     data: {
       userId: userId,
       order_date: order_date,
-      total_price:  parseFloat(total_price),
-      shipping_address: shipping_address,
-      billing_address: billing_adddresss, 
+      total_price:  parseFloat(total_price), 
       status: status
     },
   })
