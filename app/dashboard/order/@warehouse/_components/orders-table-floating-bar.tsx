@@ -41,7 +41,7 @@ export function OrdersTableFloatingBar({ table }: OrdersTableFloatingBarProps) {
 
   const [isPending, startTransition] = React.useTransition()
   const [method, setMethod] = React.useState<
-    "update-status" | "export" | "delete"
+    "update-status" | "export"
   >()
 
   // Clear selection on Escape key press
@@ -184,46 +184,6 @@ export function OrdersTableFloatingBar({ table }: OrdersTableFloatingBarProps) {
                 </TooltipTrigger>
                 <TooltipContent className=" border bg-accent font-semibold text-foreground dark:bg-zinc-900">
                   <p>Export orders</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip delayDuration={250}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="size-7 border"
-                    onClick={() => {
-                      setMethod("delete")
-
-                      startTransition(async () => {
-                        const { error } = await deleteOrders({
-                          ids: rows.map((row) => row.original.id),
-                        })
-
-                        if (error) {
-                          toast.error(error)
-                          return
-                        }
-
-                        table.toggleAllRowsSelected(false)
-                      })
-                    }}
-                    disabled={isPending}
-                  >
-                    {isPending && method === "delete" ? (
-                      <ReloadIcon
-                        className="size-3.5 animate-spin"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <TrashIcon className="size-3.5" aria-hidden="true" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className=" border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Delete orders</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

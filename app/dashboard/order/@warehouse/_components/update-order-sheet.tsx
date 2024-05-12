@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -38,6 +39,11 @@ import { updateOrder } from "../../_lib/actions"
 import { updateOrderSchema, type UpdateOrderSchema } from "../../_lib/validations"
 import { OrderStatus } from "@prisma/client"
 import { Order } from "@/types/index"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
 
 interface UpdateOrderSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -51,6 +57,7 @@ export function UpdateOrderSheet({ order, ...props }: UpdateOrderSheetProps) {
     resolver: zodResolver(updateOrderSchema),
     defaultValues: {
       status: order.status,
+      estimated_deliver_date: order.shippingInfo?.updatedAt,
     },
   })
 
@@ -86,23 +93,52 @@ export function UpdateOrderSheet({ order, ...props }: UpdateOrderSheetProps) {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            {/* <FormField
+            <FormField
               control={form.control}
-              name="title"
+              name="estimated_deliver_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Do a kickflip"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>Estimated delivery date</FormLabel>
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  {/* <FormDescription>
+                    Update this field in case.
+                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
             <FormField
               control={form.control}
               name="status"

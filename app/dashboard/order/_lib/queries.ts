@@ -89,6 +89,7 @@ export async function getOrders(input: GetOrdersSchema) {
               addressLine2: true,
               city: true,
               state: true,
+              updatedAt: true,
               deliveryMethod: true,
               trackingNumber: true
             }
@@ -182,6 +183,7 @@ export async function getUnApprovedOrders(input: GetOrdersSchema) {
               addressLine2: true,
               city: true,
               state: true,
+              updatedAt: true,
               deliveryMethod: true,
               trackingNumber: true
             }

@@ -26,7 +26,7 @@ export type GetOrdersSchema = z.infer<typeof getOrdersSchema>
 
 export const updateOrderSchema = z.object({
   status: z.nativeEnum(OrderStatus).optional(),
-  order_date: z.date().optional(),
+  estimated_deliver_date: z.date().optional(),
 })
 
 export type UpdateOrderSchema = z.infer<typeof updateOrderSchema>

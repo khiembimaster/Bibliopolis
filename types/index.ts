@@ -38,6 +38,7 @@ export type ShippingInfo = {
   addressLine2: string | null,
   city: string,
   state: string,
+  updatedAt: Date,
   deliveryMethod: string,
   trackingNumber: string | null
 }

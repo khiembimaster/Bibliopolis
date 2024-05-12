@@ -38,7 +38,11 @@ export async function updateOrder(input: UpdateOrderSchema & { id: string }) {
       where: {id: input.id},
       data: {
         status: input.status,
-        order_date: input.order_date
+        shippingInfo: {
+          update: {
+            updatedAt: input.estimated_deliver_date,
+          }
+        }
       }
     })
 

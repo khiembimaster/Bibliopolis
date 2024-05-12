@@ -27,7 +27,6 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 
 import { updateOrder } from "../../_lib/actions"
 import { getStatusIcon } from "../../_lib/utils"
-import { DeleteOrdersDialog } from "./delete-orders-dialog"
 import { UpdateOrderSheet } from "./update-order-sheet"
 import { Order, ShippingInfo, User } from "@/types/index"
 import { OrderStatus } from "@prisma/client"
@@ -110,6 +109,20 @@ export function getColumns(): ColumnDef<Order>[] {
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
     },
     {
+      id: "estimated_delivery_date",
+      accessorKey: "shippingInfo",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Delivery Date" />
+      ),
+      cell: ({ cell }) => {
+        const info = cell.getValue() as ShippingInfo;
+        const estimated_delivery_date = info?.updatedAt;
+        console.log(info);
+        if(!estimated_delivery_date) return "Not set yet"; 
+        return formatDate(estimated_delivery_date)
+      },
+    },
+    {
       id:"address",
       accessorKey: "shippingInfo",
       header: () => "Address",
@@ -132,22 +145,13 @@ export function getColumns(): ColumnDef<Order>[] {
         const [isUpdatePending, startUpdateTransition] = React.useTransition()
         const [showUpdateOrderSheet, setShowUpdateOrderSheet] =
           React.useState(false)
-        const [showDeleteOrderDialog, setShowDeleteOrderDialog] =
-          React.useState(false)
-
+      
         return (
           <>
             <UpdateOrderSheet
               open={showUpdateOrderSheet}
               onOpenChange={setShowUpdateOrderSheet}
               order={row.original}
-            />
-            <DeleteOrdersDialog
-              open={showDeleteOrderDialog}
-              onOpenChange={setShowDeleteOrderDialog}
-              orders={[row.original]}
-              showTrigger={false}
-              onSuccess={() => row.toggleSelected(false)}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -197,13 +201,6 @@ export function getColumns(): ColumnDef<Order>[] {
                     </DropdownMenuRadioGroup>
                   </DropdownMenuSubContent>
                 </DropdownMenuSub> */}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={() => setShowDeleteOrderDialog(true)}
-                >
-                  Delete
-                  <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
