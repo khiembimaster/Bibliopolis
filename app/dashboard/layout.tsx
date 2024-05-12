@@ -26,7 +26,7 @@ const bottom_section = [
 const DashboardLayout = async ({children}: Props) => {
   const session = await auth()
   const user = session?.user;
-  if (session?.user.role ===  Role.USER) 
+  if (!session || session?.user.role ===  Role.USER)
     return <div>You are not permitted to view this page! Please choose another account.</div>
 
   return (

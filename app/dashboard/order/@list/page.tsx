@@ -7,7 +7,7 @@ import { auth } from "@/auth"
 import { SearchParams } from "@/types/index"
 import { searchParamsSchema } from "../_lib/validations"
 import { Role } from "@prisma/client"
-import { getOrders } from "../_lib/queries"
+import { getUnApprovedOrders } from "../_lib/queries"
 
 export interface Props {
   searchParams: SearchParams
@@ -15,7 +15,7 @@ export interface Props {
 
 const AdminOrderPage = async ({ searchParams }: Props) => {
   const search = searchParamsSchema.parse(searchParams)
-  const ordersPromise = getOrders(search)
+  const ordersPromise = getUnApprovedOrders(search)
   
   const session = await auth();
   if(session?.user.role !== Role.ADMIN) return null;

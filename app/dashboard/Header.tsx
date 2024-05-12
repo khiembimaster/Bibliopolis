@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { User } from "@prisma/client"
 import { StaticImport } from "next/dist/shared/lib/get-img-props"
 import { useRouter } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 
 
 interface SidebarProps {
@@ -105,12 +106,8 @@ const Header = ({links,user}:SidebarProps) => {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="relative ml-auto flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-        />
+        <div className="text-lg font-semibold flex flex-row-reverse">{user.name}</div>
+        <small className="flex text-sm font-medium leading-none">{user.email}</small>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -120,7 +117,7 @@ const Header = ({links,user}:SidebarProps) => {
             className="overflow-hidden rounded-full"
           >
             {
-              user.image?
+              user !== undefined ? 
             <Image
              src={user.image }
               width={36}
@@ -128,8 +125,7 @@ const Header = ({links,user}:SidebarProps) => {
               alt="Avatar"
               className="overflow-hidden rounded-full"
             />:null
-            }
-
+            }  
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

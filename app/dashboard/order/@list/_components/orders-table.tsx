@@ -11,6 +11,8 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import type { getOrders } from "../../_lib/queries"
 import { getStatusIcon } from "../../_lib/utils"
 import { getColumns } from "./orders-table-columns"
+import { OrdersTableFloatingBar } from "./orders-table-floating-bar"
+import { OrdersTableToolbarActions } from "./orders-table-toolbar-actions"
 
 interface OrdersTableProps {
   ordersPromise: ReturnType<typeof getOrders>
@@ -43,7 +45,10 @@ export function OrdersTable({ ordersPromise }: OrdersTableProps) {
     {
       label: "Status",
       value: "status",
-      options: Object.keys(OrderStatus).map((status) => ({
+      options: [OrderStatus.UNAPPROVED, 
+                OrderStatus.APPROVED, 
+                OrderStatus.IN_CANCEL, 
+                OrderStatus.CANCELLED].map((status) => ({
         label: status[0]?.toUpperCase() + status.slice(1),
         value: status,
         icon: getStatusIcon(status),
@@ -66,8 +71,13 @@ export function OrdersTable({ ordersPromise }: OrdersTableProps) {
   return (
     <DataTable
       table={table}
+      floatingBar={
+        <OrdersTableFloatingBar table={table} />
+      }
     >
-      <DataTableToolbar table={table} filterFields={filterFields}/>
+      <DataTableToolbar table={table} filterFields={filterFields}>
+        <OrdersTableToolbarActions table={table} />
+      </DataTableToolbar>
     </DataTable>
   )
 }
