@@ -260,7 +260,7 @@ export default function CartList() {
               0
             )}
           </p>
-          <Dialog open={showDialog}>
+          <Dialog >
             <DialogTrigger asChild>
               <Button size={"lg"} onClick={handlePayment}>
                 Payment
@@ -276,43 +276,43 @@ export default function CartList() {
                   <Label htmlFor="name" className="text-right">
                     Full name
                   </Label>
-                  <Input id="name" className="col-span-3" placeholder="James mary" required />
+                  <Input id="name" type="text" className="col-span-3" placeholder="James mary" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="address" className="text-right">
                     Address 1
                   </Label>
-                  <Input id="address1" className="col-span-3" placeholder="house number, street name" required />
+                  <Input id="address1"  type="text" className="col-span-3" placeholder="house number, street name" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
-                  <Label htmlFor="address" className="text-right">
+                  <Label htmlFor="address"  className="text-right">
                     Address 2
                   </Label>
-                  <Input id="address2" className="col-span-3" placeholder="ward, district" required />
+                  <Input id="address2"  type="text" className="col-span-3" placeholder="ward, district" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
-                  <Label htmlFor="address" className="text-right">
+                  <Label htmlFor="address"  className="text-right">
                     City
                   </Label>
-                  <Input id="city" className="col-span-3" placeholder="City, province" required />
+                  <Input id="city"  type="text" className="col-span-3" placeholder="City, province" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="address" className="text-right">
                     Country
                   </Label>
-                  <Input id="country" className="col-span-3" placeholder="ward, district" required />
+                  <Input id="country"  type="text" className="col-span-3" placeholder="ward, district" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="phone" className="text-right">
                     Phone
                   </Label>
-                  <Input id="phone" className="col-span-3" placeholder="+8436254569" required />
+                  <Input id="phone"  type="text" className="col-span-3" placeholder="+8436254569" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4 mt-5">
                   <Label htmlFor="phone" className="text-right">
                     Email
                   </Label>
-                  <Input id="email" className="col-span-3" placeholder="...@gmail.com" required />
+                  <Input id="email"  type="email" className="col-span-3" placeholder="...@gmail.com" required />
                 </div>
               </div>
               <DialogFooter>

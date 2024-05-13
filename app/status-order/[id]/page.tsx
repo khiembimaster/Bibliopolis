@@ -13,6 +13,7 @@ export default function Page() {
   const [items, setItems] = useState<{ id: number, book: { id: number, image: string, name: string, price: number, quantity: number }, quantity: number }[]>([]);
   const [order, setOrder] = useState<NonNullable<any>>(null);
   const [shippingInfo, setShippingInfo] = useState<NonNullable<any>>(null);
+
   useEffect(() => {
     const fetchOrderBooks = async () => {
       try {
@@ -65,13 +66,16 @@ export default function Page() {
       <div className='col-span-3 ms-10 me-10'>
         <hr className="h-px my-5 bg-gray-200 border-0 dark:bg-gray-700"></hr>
         <h1 className='text-2xl font-bold'>Order ID: {orderId}</h1>
-        <div className='flex gap-40 mt-5'>
+        <div className='flex gap-20 mt-5'>
           <div>
             <p className='font-bold'>Order date</p>
-            <p> {String(order?.order_date)}</p>
+            <p> {String(order?.order_date.getDate())}-{String(order?.order_date.getMonth() + 1)}-{String(order?.order_date.getFullYear())}</p>
           </div>
-          <div className='flex gap-60 justify-center'>
-            <div>
+          <div>
+            <p className='font-bold'>Delivery date</p>
+            <p> {String(shippingInfo?.updatedAt.getDate())}-{String(shippingInfo?.updatedAt.getMonth() + 1)}-{String(shippingInfo?.updatedAt.getFullYear())}</p>
+          </div>
+          <div>
               <p className='font-bold'>Shipping Address</p>
               <p>{String(shippingInfo?.addressLine1)} - {String(shippingInfo?.addressLine2)} - {String(shippingInfo?.city)} - {String(shippingInfo?.country)}</p>
             </div>
@@ -84,7 +88,6 @@ export default function Page() {
               <p className='font-bold'>Status</p>
               <p>{String(order?.status)}</p>
             </div>
-          </div>
         </div>
         <hr className="h-px mt-5 bg-gray-200 border-0 dark:bg-gray-700"></hr>
       </div>

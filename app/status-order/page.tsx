@@ -51,8 +51,8 @@ export default function OrdersPage() {
                         <TableRow>
                             <TableHead>Order ID</TableHead>
                             <TableHead >Create date</TableHead>
-                            <TableHead className="w-[280px]">Total price</TableHead>
-                            <TableHead className='w-[280px]'>Status</TableHead>
+                            <TableHead >Total price</TableHead>
+                            <TableHead >Status</TableHead>
                             <TableHead className='text-left'>View</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -60,9 +60,9 @@ export default function OrdersPage() {
                         {orders.map((order) => (
                             <TableRow key={order.id}>
                                 <TableCell>{order.id}</TableCell>
-                                <TableCell className="text-left" >{String(order.order_date)}</TableCell>
-                                <TableCell className="w-[250px]">{order.total_price}</TableCell>
-                                <TableCell className='w-[280px]'>{order.status}</TableCell>
+                                <TableCell > <p> {String(order?.order_date.getDate())}-{String(order?.order_date.getMonth() + 1)}-{String(order?.order_date.getFullYear())}</p></TableCell>
+                                <TableCell >${order.total_price}</TableCell>
+                                <TableCell className='text-left'>{order.status}</TableCell>
                                 <TableCell >
                                     <Link href={`/status-order/${order.id}`}>
                                         <AiFillEye className={'w-8 h-8'} />
