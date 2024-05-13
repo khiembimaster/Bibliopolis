@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import { auth } from "@/auth";
+import { ThemeProvider } from "next-themes";
 
 const fontSans = Quicksand({
   subsets: ["latin"],
@@ -23,6 +24,24 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await auth();
+  if (session?.user.role === "ADMIN" || session?.user.role === "WAREHOUSE_STAFF") {
+    return (
+      <html lang="en">
+        <body>
+          <SessionProvider session={session}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          </SessionProvider>
+        </body>
+      </html>
+    );
+  }
   return (
     <html lang="en">
       <body className={fontSans.className}>

@@ -95,11 +95,23 @@ export async function updateOrders(input: {
 
 export async function deleteOrder(input: { id: string }) {
   try {
-    await prisma.order.delete({
-      where:{
-        id: input.id
-      }
-    })
+    await prisma.$transaction([
+      prisma.shippingInfo.delete({
+        where: {
+          orderId: input.id
+        }
+      }),
+      prisma.booksToOrders.deleteMany({
+        where: {
+          orderId: input.id,
+        }
+      }),
+      prisma.order.delete({
+        where:{
+          id: input.id
+        }
+      }),
+    ])
 
     revalidatePath("/")
   } catch (err) {
@@ -112,13 +124,29 @@ export async function deleteOrder(input: { id: string }) {
 
 export async function deleteOrders(input: { ids: string[] }) {
   try {
-    await prisma.order.deleteMany({
-      where:{
-        id: {
-          in: input.ids
+    await prisma.$transaction([
+      prisma.shippingInfo.deleteMany({
+        where: {
+          orderId: {
+            in: input.ids
+          }
         }
-      }
-    })
+      }),
+      prisma.booksToOrders.deleteMany({
+        where: {
+          orderId: {
+            in: input.ids
+          }
+        }
+      }),
+      prisma.order.deleteMany({
+        where:{
+          id: {
+            in: input.ids
+          }
+        }
+      }),
+    ])
 
     revalidatePath("/")
 
