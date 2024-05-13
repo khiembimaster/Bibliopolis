@@ -39,7 +39,7 @@ const OrderLayout = async({
       >
         <ResizablePanel defaultSize={80}>
           <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Order Control Table <Badge className='align-center'>Seller</Badge>
+            Order Control Table <Badge className='align-center'>Admin</Badge>
           </h2>
           {admin}
         </ResizablePanel>

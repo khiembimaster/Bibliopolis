@@ -37,10 +37,7 @@ export type ShippingInfo = {
   addressLine1: string,
   addressLine2: string | null,
   city: string,
-  state: string,
   updatedAt: Date,
-  deliveryMethod: string,
-  trackingNumber: string | null
 }
 
 export type User = {
