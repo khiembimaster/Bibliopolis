@@ -16,6 +16,7 @@ import { User } from "@prisma/client"
 import { StaticImport } from "next/dist/shared/lib/get-img-props"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
+import { ModeToggle } from "@/components/my_components/ModeToggle"
 
 
 interface SidebarProps {
@@ -105,9 +106,13 @@ const Header = ({links,user}:SidebarProps) => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="relative ml-auto flex-1 md:grow-0">
+      
+      <div className="relative ml-auto flex-2 md:grow-1">
         <div className="text-lg font-semibold flex flex-row-reverse">{user.name}</div>
         <small className="flex text-sm font-medium leading-none">{user.email}</small>
+      </div>
+      <div className="content-end">
+        <ModeToggle/>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
